@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "timeMaster",
+  "description": "大学生个人时间管理平台",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}
