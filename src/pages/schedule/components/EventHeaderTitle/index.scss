@@ -1,0 +1,44 @@
+@import '../../../../style/theme.scss';
+
+.eventHeaderTitle {
+  margin: 0 36px;
+  display: flex;
+  justify-content: space-between;
+  
+  &-title {
+    color: #666;
+    font-size: 42px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  &-comment {
+    margin-top: 8px;
+    margin-bottom: 42px;
+    color: #888;
+    font-size: 28px;
+
+    &-number {
+      color: $color-font-brand;
+    }
+  }
+
+  &-right {
+    height: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-operation {
+      border-radius: 50%;
+      padding: 8px;
+      &:active {
+        background-color: $color-font-brand;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+

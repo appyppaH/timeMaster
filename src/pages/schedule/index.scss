@@ -1,0 +1,25 @@
+@import '../../style/theme.scss';
+
+
+.event {
+  height: 100%;
+  width: 100%;
+  background-color: $color-background;
+
+  &-header {
+    // padding-top: 128px;
+  }
+  
+  &-content {
+    width: 100%;
+  }
+
+  &-whiteBackground {
+    background-color: #ffffff;
+    z-index: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 240px;
+  }
+}

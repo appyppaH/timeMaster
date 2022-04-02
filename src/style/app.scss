@@ -1,0 +1,37 @@
+@import './theme.scss';
+@import './courseBox.scss';
+@import './generalSchedule.scss';
+
+// 把一部分公用组件的scss放在这里，避免编译警告
+@import '../components/CustomButton/index.scss';
+
+page {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+// 覆写taro-ui的float-layout样式
+.at-float-layout__container {
+  border-radius: 32px 32px 0 0;
+  min-height: 324px!important;
+  max-height: 1224px!important;
+}
+.layout-body {
+  min-height: 324px!important;
+  max-height: 1224px!important;
+  &__content {
+    min-height: 300px!important;
+    max-height: 1200px!important;
+  }
+}
+
+.at-float-layout {
+  z-index: 2000!important;
+}
+
+.at-accordion__content {
+  transition: height 300ms ease-in-out;
+}
+

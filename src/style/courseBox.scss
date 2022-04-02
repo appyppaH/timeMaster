@@ -1,0 +1,478 @@
+@import './theme.scss';
+
+.courseBox {
+  width: 100%;
+  background-color: rgba(255, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &-blank {
+    position: absolute;
+    width: 97px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 5px;
+    bottom: 5px;
+    height: 95px;
+    background-color: #f6f6f6;
+  }
+
+  &-course {
+    position: absolute;
+    width: 97px;
+    padding: 2px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: 5px;
+    bottom: 5px;
+
+    &:active {
+      border: 3px solid $color-brand-light;
+    }
+
+    &_mult {
+      border: 2px dashed $color-semi;
+    }
+
+    &_exam {
+      border: 2px solid $color-error;
+    }
+
+    &-boxType {
+
+      &_1 {
+        height: 96px;
+      }
+
+      &_2 {
+        height: 194px;
+      }
+
+      &_3 {
+        height: 98%;
+      }
+
+      &_4 {
+        height: 393px;
+      }
+    }
+
+    &__doubleLeft {
+      left: 5px;
+      width: 47px;
+    }
+
+    &__doubleRight {
+      left: 55px;
+      width: 47px;
+    }
+
+    &-name {
+      width: 100%;
+      text-align: center;
+      color: #ffffff;
+      font-size: 26px;
+
+    }
+
+    &-clazzRoom {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
+      color: #ffffff;
+      font-size: 20px;
+    }
+  }
+
+  &-redPoint {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background-color: $color-error;
+    box-shadow: 0 4px 8px 0 rgba($color: $color-error, $alpha: 0.2);;
+    z-index: 5;
+  }
+
+  &-boxType {
+
+    &_1 {
+      height: 100px;
+      // background-color: green;
+    }
+
+    &_2 {
+      height: 200px;
+      // background-color: yellow;
+    }
+
+    &_3 {
+      height: 299px;
+      // background-color: red;
+    }
+
+    &_4 {
+      height: 398px;
+      // background-color: blue;
+    }
+  }
+
+  // 盒子 主题颜色
+  &-boxColor {
+
+    // 空教室查询的
+    &-red {
+      background-color: #ffdad1;
+    }
+
+    &-green {
+      background-color: #bceae0;
+    }
+
+    // 默认主题
+    &-init_0 {
+      background-color: #000000;
+    }
+
+    &-blue_0 {
+      background-color: $blue_b0;
+    }
+
+    &-darkBlue_0 {
+      background-color: $darkBlue_b0;
+    }
+
+    &-red_0 {
+      background-color: $red_b0;
+    }
+
+    &-yellow_0 {
+      background-color: $yellow_b0;
+    }
+
+    &-green_0 {
+      background-color: $green_b0;
+    }
+
+    &-gray_0 {
+      background-color: $gray_b0;
+    }
+
+    &-darkGray_0 {
+      background-color: $darkGray_b0;
+    }
+
+    &-brown_0 {
+      background-color: $brown_b0;
+    }
+
+    &-orange_0 {
+      background-color: $orange_b0;
+    }
+
+    &-purple_0 {
+      background-color: $purple_b0;
+    }
+
+    // 活泼主题
+    &-init_1 {
+      background-color: #000000;
+    }
+
+    &-blue_1 {
+      background-color: $blue_b1;
+
+    }
+
+    &-darkBlue_1 {
+      background-color: $darkBlue_b1;
+    }
+
+    &-red_1 {
+      background-color: $red_b1;
+    }
+
+    &-yellow_1 {
+      background-color: $yellow_b1;
+    }
+
+    &-green_1 {
+      background-color: $green_b1;
+    }
+
+    &-orange_1 {
+      background-color: $orange_b1;
+    }
+
+    &-purple_1 {
+      background-color: $purple_b1;
+    }
+
+    &-pink_1 {
+      background-color: $pink_b1;
+    }
+
+    &-gold_1 {
+      background-color: $gold_b1;
+    }
+
+    // 莫兰蒂主题
+    &-init_2 {
+      background-color: #000000;
+    }
+
+    &-blue_2 {
+      background-color: $blue_b2;
+
+    }
+
+    &-purple_2 {
+      background-color: $purple_b2;
+    }
+
+    &-red_2 {
+      background-color: $red_b2;
+    }
+
+    &-yellow_2 {
+      background-color: $yellow_b2;
+    }
+
+    &-green_2 {
+      background-color: $green_b2;
+    }
+
+    &-pink_2 {
+      background-color: $pink_b2;
+    }
+
+    &-orange_2 {
+      background-color: $orange_b2;
+    }
+
+    &-grey_2 {
+      background-color: $grey_b2;
+    }
+
+    &-brown_2 {
+      background-color: $brown_b2;
+    }
+
+    // 罗时锴主题
+    &-init_3 {
+      background-color: #000000;
+    }
+
+    &-blue_3 {
+      background-color: $blue_b3;
+
+    }
+
+    &-purple_3 {
+      background-color: $purple_b3;
+    }
+
+    &-red_3 {
+      background-color: $red_b3;
+    }
+
+    &-yellow_3 {
+      background-color: $yellow_b3;
+    }
+
+    &-green_3 {
+      background-color: $green_b3;
+    }
+
+    &-pink_3 {
+      background-color: $pink_b3;
+    }
+
+    &-orange_3 {
+      background-color: $orange_b3;
+    }
+
+    &-blue2_3 {
+      background-color: $blue2_b3;
+    }
+
+    &-green2_3 {
+      background-color: $green2_b3;
+    }
+  }
+
+  // 文字 主题颜色
+  &-fontColor {
+
+    // 空教室查询的
+    &-red {
+      color: #b24b2a;
+    }
+
+    &-green {
+      color: #21574a;
+    }
+
+    // 默认主题-文字
+    &-blue_0 {
+      color: #ffffff;
+    }
+
+    &-darkBlue_0 {
+      color: #ffffff;
+    }
+
+    &-red_0 {
+      color: #ffffff;
+    }
+
+    &-yellow_0 {
+      color: #ffffff;
+    }
+
+    &-green_0 {
+      color: #ffffff;
+    }
+
+    &-gray_0 {
+      color: #ffffff;
+    }
+
+    &-darkGray_0 {
+      color: #ffffff;
+    }
+
+    &-brown_0 {
+      color: #ffffff;
+    }
+
+    &-orange_0 {
+      color: #ffffff;
+    }
+
+    &-purple_0 {
+      color: #ffffff;
+    }
+
+    // 活泼主题-文字
+    &-blue_1 {
+      color: $blue_f1;
+    }
+
+    &-darkBlue_1 {
+      color: $darkBlue_f1;
+    }
+
+    &-red_1 {
+      color: $red_f1;
+    }
+
+    &-yellow_1 {
+      color: $yellow_f1;
+    }
+
+    &-green_1 {
+      color: $green_f1;
+    }
+
+    &-orange_1 {
+      color: $orange_f1;
+    }
+
+    &-purple_1 {
+      color: $purple_f1;
+    }
+
+    &-pink_1 {
+      color: $pink_f1;
+    }
+
+    &-gold_1 {
+      color: $gold_f1;
+    }
+
+    // 莫兰蒂主题-文字
+    &-blue_2 {
+      color: #ffffff;
+
+    }
+
+    &-purple_2 {
+      color: #ffffff;
+    }
+
+    &-red_2 {
+      color: #ffffff;
+    }
+
+    &-yellow_2 {
+      color: #ffffff;
+    }
+
+    &-green_2 {
+      color: #ffffff;
+    }
+
+    &-pink_2 {
+      color: #ffffff;
+    }
+
+    &-orange_2 {
+      color: #ffffff;
+    }
+
+    &-grey_2 {
+      color: #ffffff;
+    }
+
+    &-brown_2 {
+      color: #ffffff;
+    }
+
+    // 罗时锴主题-文字
+    &-blue_3 {
+      color: $blue_f3;
+    }
+
+    &-purple_3 {
+      color: $purple_f3;
+    }
+
+    &-red_3 {
+      color: $red_f3;
+    }
+
+    &-yellow_3 {
+      color: $yellow_f3;
+    }
+
+    &-green_3 {
+      color: $green_f3;
+    }
+
+    &-pink_3 {
+      color: $pink_f3;
+    }
+
+    &-orange_3 {
+      color: $orange_f3;
+    }
+
+    &-blue2_3 {
+      color: $blue2_f3;
+    }
+
+    &-green2_3 {
+      color: $green2_f3;
+    }
+  }
+}
