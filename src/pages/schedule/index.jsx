@@ -17,7 +17,17 @@ import './index.scss'
 
 function Schedule(props) {
   const [statusBarHeight, setStatusBarHeight] = useState(28)
-
+  const [dayIndex, setDayIndex] = useState(0)
+  const currentDayIndex = 1
+  const weekData = [
+    { dayZh: "周一", dateZh: "2000/10/01", today: false },
+    { dayZh: "周二", dateZh: "2000/10/02", today: false },
+    { dayZh: "周三", dateZh: "2000/10/03", today: false },
+    { dayZh: "周四", dateZh: "2000/10/04", today: false },
+    { dayZh: "周五", dateZh: "2000/10/05", today: false },
+    { dayZh: "周六", dateZh: "2000/10/06", today: false },
+    { dayZh: "周日", dateZh: "2000/10/07", today: false },
+  ]
   useEffect(() => {
     Taro.getSystemInfo({
       success: function (res) {
@@ -26,24 +36,36 @@ function Schedule(props) {
     })
   }, [])
 
-
+  const getClickDayIndex = (_dayIndex) => {
+    setDayIndex(_dayIndex)
+    // console.log('dayIndex', _dayIndex)
+  }
+  const swiperDayIndex = (obs) => {
+    const index = dayIndex + obs
+    if (index < 0) {
+      setDayIndex(0)
+    } else if (index > 6) {
+      setDayIndex(6)
+    } else {
+      setDayIndex(index)
+    }
+    // console.log("swiperDayIndex", dayIndex)
+  }
   return (
     <View className='event'>
 
-      <Weather statusBarHeight={statusBarHeight} />
-
       <View className='event-header' style={{ paddingTop: statusBarHeight + 44 }}>
-        {/* TODO */}
+        <Weather statusBarHeight={statusBarHeight} />
         <EventHeaderTitle />
-        <EventTimePicker />
+        <EventTimePicker weekData={weekData} currentDayIndex={currentDayIndex} dayIndex={dayIndex} handleClickDay={getClickDayIndex} />
       </View>
       <View className='event-content'>
         {/* TODO */}
-        <EventTimeList />
+        <EventTimeList swiperDayIndex={swiperDayIndex} />
         {/* <EventTable /> */}
       </View>
-
-      <View className='event-whiteBackground'></View>
+      {/* 作用？？？ */}
+      {/* <View className='event-whiteBackground'></View> */}
 
       {/* <CourseDetailFloatLayout
         courseDetailFLData={courseDetailFLData}

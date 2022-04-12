@@ -1,18 +1,6 @@
 @import '../../../../style/theme.scss';
 
 .eventTimeList {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-sizing: border-box;
-  padding-right: 50px;
-  border-top-right-radius: 42px;
-  border-top-left-radius: 42px;
-  box-shadow: 0 -4px 10px #eee;
-  background-color: #ffffff;
-  margin-top: 48px;
-
   &-item {
     width: 100%;
     display: flex;

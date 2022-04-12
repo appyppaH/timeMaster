@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "timeMaster",
   "description": "大学生个人时间管理平台",
-  "appid": "touristappid",
+  "appid": "wx0149d498ae9645f4",
   "setting": {
     "urlCheck": true,
     "es6": false,

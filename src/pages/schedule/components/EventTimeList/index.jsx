@@ -4,8 +4,13 @@ import { View, Text } from '@tarojs/components'
 
 import './index.scss';
 
-export default () => {
+export default (props) => {
+  const { swiperDayIndex } = props;
   const [pTimeLine, setPTimeLine] = useState(30)
+
+  let startX = 0;
+  let startY = 0;
+
   const eventBoxHeight = 1.5
   const timeList = [
     '08:00',
@@ -37,10 +42,28 @@ export default () => {
     }, 60000);
   }, [])
 
-
-
+  const touchStart = (e) => {
+    const { clientX, clientY } = e.touches[0]
+    startX = clientX
+    startY = clientY
+  }
+  const touchMove = (e) => {
+    const { clientX, clientY } = e.touches[0]
+    const moveX = clientX - startX
+    const moveY = clientY - startY
+    if (Math.abs(moveX) > Math.abs(moveY)) {
+      if (moveX > 0) {
+        swiperDayIndex(-1)
+      } else {
+        swiperDayIndex(1)
+      }
+    }
+  }
+  const touchEnd = () => {
+    
+  }
   return (
-    <View className='eventTimeList'>
+    <View className='eventTimeList' onTouchStart={(e) => touchStart(e)} onTouchMove={(e) => { touchMove(e) }} onTouchEnd={(e) => { touchEnd(e) }}>
       {
         timeList.map(time => (
           <View key={time} className='eventTimeList-item' style={{ height: 120 * eventBoxHeight + 'rpx' }}>
