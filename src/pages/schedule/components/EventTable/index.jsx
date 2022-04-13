@@ -6,19 +6,20 @@ import EventBox from '../EventBox'
 import './index.scss';
 
 export default () => {
-  
-  const eventBoxHeight = 1.5
+  const eventBoxHeight = 0.8
+
   const scheduleMatrix  = []
   const timeTable = []
   const weekIndex =0
   const dayIndex = 0
-  if (!scheduleMatrix || !timeTable ) {
+  if (scheduleMatrix || timeTable ) {
     return ''
   }
-
+  // dayScheduleData[周次][天] = 当天课程
   const dayScheduleData = scheduleMatrix[weekIndex][dayIndex]
 
   const boxTypeList = []
+  // 当天课程数据
   dayScheduleData.map((courseBoxList) => {
     const { timeIndexes = [] } = courseBoxList[0]
     const boxType = timeIndexes[timeIndexes.length - 1] - timeIndexes[0] + 1
