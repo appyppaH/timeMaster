@@ -5,9 +5,10 @@ import { View, Text } from '@tarojs/components'
 
 import './index.scss';
 
-export default () => {
+export default (props) => {
+  const { currentWeekIndex, dateZh} = props
   const [dailyEventNumber, setDailyEventNumber] = useState(0)
-  const [dateZh, setDateZh] = useState(0)
+  // const [dateZh, setDateZh] = useState(0)
   const [showSetting, setShowSetting] = useState(false)
 
   // TODO: 假数据
@@ -15,9 +16,9 @@ export default () => {
   return (
     <View className='eventHeaderTitle'>
       <View className='eventHeaderTitle-left'>
-         {/* TODO: 这里要设置点击事件选择日历 */}
+        {/* TODO: 这里要设置点击事件选择日历 */}
         <View className='eventHeaderTitle-title'>
-          <Text style={{ marginRight: 8 }}>第{weekIndex + 1}周 {dateZh}</Text>
+          <Text style={{ marginRight: 8 }}>第{currentWeekIndex}周 {dateZh}</Text>
           {/* <IconFont name='arrow-down-filling' size={24} color='#aaaaaa' /> */}
         </View>
         <View className='eventHeaderTitle-comment'>

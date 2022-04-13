@@ -42,6 +42,7 @@
     "@tarojs/react": "3.4.4",
     "@tarojs/runtime": "3.4.4",
     "@tarojs/taro": "3.4.4",
+    "dayjs": "^1.11.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",

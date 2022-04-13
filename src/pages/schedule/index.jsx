@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import Taro, { usePullDownRefresh } from '@tarojs/taro'
 import { connect } from 'react-redux'
+
+import * as dayjs from 'dayjs'
+
 import { View } from '@tarojs/components'
 
 import EventHeaderTitle from './components/EventHeaderTitle'
@@ -17,53 +20,91 @@ import './index.scss'
 
 function Schedule(props) {
   const [statusBarHeight, setStatusBarHeight] = useState(28)
+  // 手动选择的日期在周视图中的索引
   const [dayIndex, setDayIndex] = useState(0)
-  const currentDayIndex = 1
-  const weekData = [
-    { dayZh: "周一", dateZh: "2000/10/01", today: false },
-    { dayZh: "周二", dateZh: "2000/10/02", today: false },
-    { dayZh: "周三", dateZh: "2000/10/03", today: false },
-    { dayZh: "周四", dateZh: "2000/10/04", today: false },
-    { dayZh: "周五", dateZh: "2000/10/05", today: false },
-    { dayZh: "周六", dateZh: "2000/10/06", today: false },
-    { dayZh: "周日", dateZh: "2000/10/07", today: false },
-  ]
+  // 当天所在周的第几天
+  const [currentDayIndex, setCurrentDayIndex] = useState(0)
+  // timePicker的显示日期
+  const [weekData, setWeekData] = useState([])
+  // 选择的日期相对于当前日期的偏移量
+  const [otherWeek, setOtherWeek] = useState(0)
+  // 当前周的日期
+  const [currentWeekIndex, setCurrentWeekIndex] = useState(11)
+  // header 上显示的日期
+  const [dateZh, setDateZh] = useState('')
+  const weekIndex = 11
   useEffect(() => {
-    Taro.getSystemInfo({
-      success: function (res) {
-        setStatusBarHeight(res.statusBarHeight)
-      }
-    })
+    setStatusBarHeight(Taro.getSystemInfoSync().statusBarHeight)
+    getWeekDay(0)
   }, [])
 
+  // 获取header的星期日期
+  const getWeekDay = (obs) => {
+    const _weekData = []
+    var l = ["一", "二", "三", "四", "五", "六", "日"];
+    const __today = dayjs().format('YYYY/MM/DD')
+    if (obs !== 0) {
+      setCurrentDayIndex(-1)
+      const _otherWeek = dayjs().subtract(obs, 'weeks')
+      for (var i = 1; i <= 7; i++) {
+        const _dateZh = _otherWeek.startOf('week').add(i, 'day').format('YYYY/MM/DD')
+        const _dayZh = "周" + l[i - 1]
+        const _today = false
+        _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
+      }
+      setDateZh(_weekData[6 - dayIndex].dateZh)
+    } else {
+      for (var i = 1; i <= 7; i++) {
+        const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
+        const _dayZh = "周" + l[i - 1]
+        const _today = __today === _dateZh ? true : false
+        if (_today) {
+          setCurrentDayIndex(i - 1)
+          setDayIndex(i - 1)
+        }
+        _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
+      }
+      setDateZh(_weekData[dayIndex].dateZh)
+    }
+    setWeekData(_weekData)
+  }
   const getClickDayIndex = (_dayIndex) => {
+    setDateZh(weekData[_dayIndex].dateZh)
     setDayIndex(_dayIndex)
-    // console.log('dayIndex', _dayIndex)
   }
   const swiperDayIndex = (obs) => {
     const index = dayIndex + obs
+    // 右滑到头 跳转至上个星期
     if (index < 0) {
-      setDayIndex(0)
-    } else if (index > 6) {
+      getWeekDay(otherWeek + 1)
+      setOtherWeek(otherWeek + 1)
+      setCurrentWeekIndex(currentWeekIndex - 1)
       setDayIndex(6)
+      // 左滑到头、跳转至下个星期
+    } else if (index > 6) {
+      getWeekDay(otherWeek - 1, 1)
+      setOtherWeek(otherWeek - 1)
+      setCurrentWeekIndex(currentWeekIndex + 1)
+      setDayIndex(0)
     } else {
+      setDateZh(weekData[index].dateZh)
       setDayIndex(index)
     }
-    // console.log("swiperDayIndex", dayIndex)
   }
   return (
     <View className='event'>
 
       <View className='event-header' style={{ paddingTop: statusBarHeight + 44 }}>
         <Weather statusBarHeight={statusBarHeight} />
-        <EventHeaderTitle />
+        <EventHeaderTitle dateZh={dateZh} currentWeekIndex={currentWeekIndex} />
         <EventTimePicker weekData={weekData} currentDayIndex={currentDayIndex} dayIndex={dayIndex} handleClickDay={getClickDayIndex} />
       </View>
       <View className='event-content'>
+        <EventTimeList swiperDayIndex={swiperDayIndex} isToday={dayIndex === currentDayIndex && weekIndex === currentWeekIndex} />
         {/* TODO */}
-        <EventTimeList swiperDayIndex={swiperDayIndex} />
-        {/* <EventTable /> */}
+        <EventTable />
       </View>
+
       {/* 作用？？？ */}
       {/* <View className='event-whiteBackground'></View> */}
 

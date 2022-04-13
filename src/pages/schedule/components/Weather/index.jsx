@@ -14,12 +14,15 @@ class Weather extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      statusBarHeight: props.statusBarHeight,
+      statusBarHeight: 0,
       weatherRealTime: {},
       imgSrc: ""
     }
   }
   componentWillMount() {
+    this.setState({
+      statusBarHeight: Taro.getSystemInfoSync().statusBarHeight
+    })
     this.getWeater()
   }
   async getWeater() {
