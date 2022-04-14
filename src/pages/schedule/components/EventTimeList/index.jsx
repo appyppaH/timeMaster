@@ -26,10 +26,10 @@ export default (props) => {
     const now = new Date()
     const hours = now.getHours()
     const minutes = now.getMinutes()
-    const startDate = new Date('2000/05/21 07:00').getTime()
+    const startDate = new Date('2000/05/21 7:00').getTime()
     const endDate = new Date('2000/05/21 ' + hours + ':' + minutes).getTime()
+    // const endDate = new Date('2000/05/21 ' + "8" + ':' + "00").getTime()
     let time = (endDate - startDate) / 60000
-    console.log(time)
     setPTimeLine(time)
     console.log('当前时间' + time)
   }

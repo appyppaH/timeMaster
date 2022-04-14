@@ -102,7 +102,7 @@ function Schedule(props) {
       <View className='event-content'>
         <EventTimeList swiperDayIndex={swiperDayIndex} isToday={dayIndex === currentDayIndex && weekIndex === currentWeekIndex} />
         {/* TODO */}
-        <EventTable />
+        <EventTable currentDayIndex={currentDayIndex} weekIndex={weekIndex} currentWeekIndex={currentWeekIndex} />
       </View>
 
       {/* 作用？？？ */}
