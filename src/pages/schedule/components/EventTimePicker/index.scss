@@ -80,8 +80,9 @@
         box-shadow: 6px 8px 15px #aaa;
         animation: day-grey-blue 0.2s linear;
       }
-      
+
       &_static {
+
         // animation: none;
         &_current {
           color: $color-font-brand;

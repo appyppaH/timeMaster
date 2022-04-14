@@ -7,10 +7,7 @@ import './index.scss';
 
 export default (props) => {
   const {handleClickDay,dayIndex,currentDayIndex,weekData} = props;
-
   const showCalendar = false
-  
-
   return (
     <View className='eventTimePicker'>
       {
@@ -36,14 +33,6 @@ export default (props) => {
                       {parseInt(dayData.dateZh.split('/')[2])}
                     </View>
                   </View>
-
-                  
-                  {/* {
-                    _dayIndex === currentDayIndex &&
-                    <View className='eventTimePicker-dayLine-item_arrow'>
-                      <IconFont name='arrow-up-filling' size={24} color='#aaaaaa' />
-                    </View>
-                  } */}
                 </View>
               ))
             }

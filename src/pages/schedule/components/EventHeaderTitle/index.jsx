@@ -8,7 +8,6 @@ import './index.scss';
 export default (props) => {
   const { currentWeekIndex, dateZh} = props
   const [dailyEventNumber, setDailyEventNumber] = useState(0)
-  // const [dateZh, setDateZh] = useState(0)
   const [showSetting, setShowSetting] = useState(false)
 
   // TODO: 假数据

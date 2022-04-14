@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro'
 import { View, Text, Image } from '@tarojs/components'
 import { useSelector } from 'react-redux'
 
-import weatherConfig from '../../../../assets/img/weather/enter'
+import weatherConfig from '../../../../../../assets/img/weather/enter'
 import './index.scss'
 
 let location = {

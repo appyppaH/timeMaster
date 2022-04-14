@@ -1,4 +1,3 @@
-@import '../../../../style/theme.scss';
 
 .weather {
   position: absolute;
@@ -9,12 +8,12 @@
   align-items: center;
 
   &-loading {
-    color: $color-light;
+    color: #919499;
     font-size: 32px;
   }
 
   &-temp {
-    color: $color-light;
+    color: #919499;
     font-size: 32px;
     margin-left: 12px;
   }

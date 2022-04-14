@@ -10,7 +10,7 @@ import EventHeaderTitle from './components/EventHeaderTitle'
 import EventTimePicker from './components/EventTimePicker'
 import EventTable from './components/EventTable'
 import EventTimeList from './components/EventTimeList'
-import Weather from './components/Weather'
+import Weather from './components/Header/components/Weather'
 
 // import CourseDetailFloatLayout from '../../components/schedule-component/CourseDetailFloatLayout'
 // import ColorPicker from '../../components/schedule-component/ColorPicker'
@@ -32,6 +32,7 @@ function Schedule(props) {
   const [currentWeekIndex, setCurrentWeekIndex] = useState(11)
   // header 上显示的日期
   const [dateZh, setDateZh] = useState('')
+  // 手动选择的周数第几天
   const weekIndex = 11
   useEffect(() => {
     setStatusBarHeight(Taro.getSystemInfoSync().statusBarHeight)
