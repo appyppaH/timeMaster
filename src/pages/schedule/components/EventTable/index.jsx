@@ -128,16 +128,16 @@ export default (props) => {
   }, [])
 
   return (
-    <View className='eventTable' style={{ top: '249px' }}>
+    <View className='eventTable' style={{ top: '0' }}>
       {
         dayScheduleData.map((course, i) => (
           <View
             className={`eventTable-course courseBox-boxColor-${course.color}_${theme}`}
             style={{
-              top: course.startTime * eventBoxHeight + 'px',
               height: (course.endTime) * eventBoxHeight + 'px',
               paddingLeft: 18 * eventBoxHeight + 'px',
               paddingRight: 18 * eventBoxHeight + 'px',
+              marginTop: course.startTime * eventBoxHeight + 'px',
             }}
             onClick={() => handleClickCourse(course)}
           >

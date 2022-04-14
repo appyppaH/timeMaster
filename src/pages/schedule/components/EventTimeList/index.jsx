@@ -76,7 +76,7 @@ export default (props) => {
 
       {
         (isToday) &&
-        <View className='eventTimeList-pTimeLine' style={{ marginTop:244+(pTimeLine * eventBoxHeight)  + 'px' }}>
+        <View className='eventTimeList-pTimeLine' style={{ marginTop:(pTimeLine * eventBoxHeight)  + 'px' }}>
           <View className='eventTimeList-pTimeLine-dot'></View>
           <View className='eventTimeList-pTimeLine-line'></View>
         </View>
