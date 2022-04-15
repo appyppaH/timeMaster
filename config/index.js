@@ -9,7 +9,6 @@ const config = {
   },
   sourceRoot: "src",
   outputRoot: "dist",
-  plugins: [],
   defineConstants: {},
   copy: {
     patterns: [],

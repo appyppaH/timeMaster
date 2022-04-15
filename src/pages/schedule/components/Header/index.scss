@@ -1,92 +1,102 @@
 @keyframes day-grey-blue {
-    0% {
-        background-color: #ebeef3;
-        color: #acafbe;
-        box-shadow: 0px 0px 0px #aaa;
-    }
+  0% {
+    background-color: #ebeef3;
+    color: #acafbe;
+    box-shadow: 0px 0px 0px #aaa;
+  }
 
-    100% {
-        background-color: $color-font-brand;
-        color: #ffffff;
-        box-shadow: 6px 8px 15px #aaa;
-    }
+  100% {
+    background-color: #0089ff;
+    color: #ffffff;
+    box-shadow: 6px 8px 15px #aaa;
+  }
 }
 
 @keyframes day-blue-grey {
-    0% {
-        background-color: $color-font-brand;
-        color: #ffffff;
-        box-shadow: 6px 8px 15px #aaa;
-    }
+  0% {
+    background-color: #0089ff;
+    color: #ffffff;
+    box-shadow: 6px 8px 15px #aaa;
+  }
 
-    100% {
-        background-color: #ebeef3;
-        color: #acafbe;
-        box-shadow: 0px 0px 0px #aaa;
-    }
+  100% {
+    background-color: #ebeef3;
+    color: #acafbe;
+    box-shadow: 0px 0px 0px #aaa;
+  }
 }
 
 @keyframes calendar-in {
-    0% {
-        opacity: 0;
-        transform: scaleY(.2);
-    }
+  0% {
+    opacity: 0;
+    transform: scaleY(.2);
+  }
 
-    100% {
-        opacity: 1;
-        transform: scaleY(1);
-    }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
-.schedule_header {
-    top: 0px;
-    width: 100%;
-    height: 280px;
-    position: fixed;
-    background-color: $color-background;
-    box-shadow: 0 4px 10px #eee;
-    border-bottom-right-radius: 42px;
-    border-bottom-left-radius: 42px;
+.schedule-header {
+  top: 0px;
+  width: 100%;
+  height: 280px;
+  position: fixed;
+  background-color: #f6f7f9;
+  box-shadow: 0 4px 10px #eee;
+  border-bottom-right-radius: 42px;
+  border-bottom-left-radius: 42px;
+  z-index: 10;
+
+  &-Title {
+    margin: 0 36px;
+    display: flex;
+    justify-content: space-between;
 
     &-title {
-        color: #666;
-        font-size: 42px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        margin-top: 16px;
+      color: #666;
+      font-size: 42px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      margin-top: 16px;
     }
 
     &-comment {
-        margin-top: 8px;
-        margin-bottom: 42px;
-        color: #888;
-        font-size: 28px;
+      margin-top: 8px;
+      margin-bottom: 42px;
+      color: #888;
+      font-size: 28px;
 
-        &-number {
-            color: #0089ff;
-        }
+      &-number {
+        color: #0089ff;
+      }
     }
 
     &-right {
-        height: inherit;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      height: inherit;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-        &-operation {
-            border-radius: 50%;
-            padding: 8px;
+      &-operation {
+        border-radius: 50%;
+        padding: 8px;
 
-            &:active {
-                background-color: #0089ff;
-                opacity: 0.6;
-            }
+        &:active {
+          background-color: #0089ff;
+          opacity: 0.6;
         }
+      }
     }
+  }
 
-    &-timePicker{
-        padding: 0 36px;
+
+}
+
+.schedule-header-timePicker {
+  padding: 0 36px;
 
   &-dayLine {
     display: flex;
@@ -120,7 +130,7 @@
       box-shadow: 0px 0px 0px #aaa;
 
       &_active {
-        background-color: $color-font-brand;
+        background-color: #0089ff;
         color: #ffffff;
         box-shadow: 6px 8px 15px #aaa;
         animation: day-grey-blue 0.2s linear;
@@ -130,7 +140,7 @@
 
         // animation: none;
         &_current {
-          color: $color-font-brand;
+          color: #0089ff;
         }
       }
     }
@@ -146,7 +156,7 @@
       position: absolute;
       bottom: -42px;
       font-size: 27px;
-      color: $color-light;
+      color: #919499;
       width: 100%;
       padding: 12px;
       border-radius: 12px;
@@ -155,6 +165,4 @@
       box-sizing: border-box;
     }
   }
-    }
-
 }

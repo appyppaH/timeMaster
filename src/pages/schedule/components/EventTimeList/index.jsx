@@ -8,8 +8,7 @@ export default (props) => {
   const { swiperDayIndex, isToday } = props;
   const [pTimeLine, setPTimeLine] = useState(30)
 
-  let startX = 0;
-  let startY = 0;
+  
 
   const eventBoxHeight = 0.8
   const timeList = [
@@ -40,28 +39,10 @@ export default (props) => {
     }, 60000);
   }, [])
 
-  const touchStart = (e) => {
-    const { clientX, clientY } = e.touches[0]
-    startX = clientX
-    startY = clientY
-  }
-  const touchMove = (e) => {
-    const { clientX, clientY } = e.touches[0]
-    const moveX = clientX - startX
-    const moveY = clientY - startY
-    if (Math.abs(moveX) > Math.abs(moveY)) {
-      if (moveX > 0) {
-        swiperDayIndex(-1)
-      } else {
-        swiperDayIndex(1)
-      }
-    }
-  }
-  const touchEnd = () => {
-  }
+  
 
   return (
-    <View className='eventTimeList' onTouchStart={(e) => touchStart(e)} onTouchMove={(e) => { touchMove(e) }} onTouchEnd={(e) => { touchEnd(e) }}>
+    <View className='eventTimeList'>
       {
         timeList.map(time => (
           // 一个item是两个小时

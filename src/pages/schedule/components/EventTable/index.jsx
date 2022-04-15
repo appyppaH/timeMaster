@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from '@tarojs/components'
 import { useSelector } from 'react-redux'
 
@@ -8,8 +8,28 @@ import './courseBox.scss'
 
 export default (props) => {
   const eventBoxHeight = 0.8
-  const scheduleMatrix = []
   const theme = 0
+
+  const { dayScheduleData, weekIndex, dayIndex } = props
+  if (!dayScheduleData) {
+    return ""
+  } else {
+    //计算课程与上一个课程距离 的以及总长度F
+    const diffTime = (startTime, endTime) => {
+      const startDate = new Date('2000/05/21 ' + startTime).getTime()
+      const endDate = new Date('2000/05/21 ' + endTime).getTime()
+      return (endDate - startDate) / 60000
+    }
+    dayScheduleData.map((course, index) => {
+      const range = course.timeRange
+      course["startTime"] = diffTime("7:00", range[0])
+      course["allTime"] = diffTime(range[0], range[1])
+      // 50 是一节课的时间（45+5分钟课间）
+      course["timeNum"] = course["allTime"] / 50
+    }, [])
+  }
+
+  // console.log(dayScheduleData)
   // const timeTable = [
   //   // 基于早上七点计算的时间
   //   { "startTime": 60, "startTimeText": "08:00" },
@@ -18,17 +38,10 @@ export default (props) => {
   // 958863600000  15981060
   // 958867200000  15981120 差60
   // 958924800000  15982080 差1020
-  const weekIndex = 0
-  const dayIndex = 0
-
   // dayScheduleData[周次][天] = 当天课程
   // const dayScheduleData = scheduleMatrix[weekIndex][dayIndex]
   // 当天课程
-  const diffTime = (startTime, endTime) => {
-    const startDate = new Date('2000/05/21 ' + startTime).getTime()
-    const endDate = new Date('2000/05/21 ' + endTime).getTime()
-    return (endDate - startDate) / 60000
-  }
+
   // 确定是否带伞
   // let rainPre = 0
   // if (weatherHourly && dayLineMatrix.length !== 0 && weatherHourly.precipitation && name) {
@@ -44,88 +57,11 @@ export default (props) => {
   //     }
   //   })
   // }
-  const dayScheduleData = [
-    {
-      "name": "计算机组成原理",
-      "clazzRoom": "A3教学楼",
-      "teacher": "",
-      "timeRange": "",
-      "timeIndexes": [1, 2],
-      "startTimeText": "08:00",
-      "endTimeText": "10:50",
-      "lessonCode": "",
-      "lessonType": "",
-      "weekIndexes": "",
-      "studentClazzes": "",
-      "studentNumber": "",
-      "color": "blue",
-      "lessonId": "",
-      "credits": "",
-      "campus": "",
-      "weekIndexesZh": "",
-      "semesterId": "",
-      "semestercode": "",
-      "memo": ""
-    }, {
-      "name": "计算机网络",
-      "clazzRoom": "A2教学楼",
-      "teacher": "",
-      "timeRange": "",
-      "timeIndexes": [3, 4],
-      "startTimeText": "11:00",
-      "endTimeText": "11:50",
-      "lessonCode": "",
-      "lessonType": "",
-      "weekIndexes": "",
-      "studentClazzes": "",
-      "studentNumber": "",
-      "color": "red",
-      "lessonId": "",
-      "credits": "",
-      "campus": "",
-      "weekIndexesZh": "",
-      "semesterId": "",
-      "semestercode": "",
-      "memo": ""
-    }, {
-      "name": "操作系统",
-      "clazzRoom": "A2教学楼",
-      "teacher": "",
-      "timeRange": "",
-      "timeIndexes": [6, 8],
-      "startTimeText": "14:00",
-      "endTimeText": "15:50",
-      "lessonCode": "",
-      "lessonType": "",
-      "weekIndexes": "",
-      "studentClazzes": "",
-      "studentNumber": "",
-      "color": "yellow",
-      "lessonId": "",
-      "credits": "",
-      "campus": "",
-      "weekIndexesZh": "",
-      "semesterId": "",
-      "semestercode": "",
-      "memo": ""
-    }
-  ]
 
   const handleClickCourse = (course) => {
     console.log(course)
   }
 
-  //计算课程与上一个课程距离 的以及总长度
-  dayScheduleData.map((course, index) => {
-    if (index === 0) {
-      course["startTime"] = diffTime("7:00", course.startTimeText)
-    } else {
-      course["startTime"] = diffTime(dayScheduleData[index - 1].endTimeText, course.startTimeText)
-    }
-    course["endTime"] = diffTime(course.startTimeText, course.endTimeText)
-    const indexes = course["timeIndexes"]
-    course["timeNum"] = indexes[indexes.length - 1] - indexes[0] + 1
-  }, [])
 
   return (
     <View className='eventTable' style={{ top: '0' }}>
@@ -134,10 +70,10 @@ export default (props) => {
           <View
             className={`eventTable-course courseBox-boxColor-${course.color}_${theme}`}
             style={{
-              height: (course.endTime) * eventBoxHeight + 'px',
+              height: (course.allTime) * eventBoxHeight + 'px',
               paddingLeft: 18 * eventBoxHeight + 'px',
               paddingRight: 18 * eventBoxHeight + 'px',
-              marginTop: course.startTime * eventBoxHeight + 'px',
+              top: course.startTime * eventBoxHeight + 'px',
             }}
             onClick={() => handleClickCourse(course)}
           >

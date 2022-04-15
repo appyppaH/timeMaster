@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import Taro, { usePullDownRefresh } from '@tarojs/taro'
 import { connect } from 'react-redux'
-
 import * as dayjs from 'dayjs'
 
+import { getSchedule } from '../../servers/servers.js'
 import { View } from '@tarojs/components'
-
-import EventHeaderTitle from './components/EventHeaderTitle'
-import EventTimePicker from './components/EventTimePicker'
 import EventTable from './components/EventTable'
 import EventTimeList from './components/EventTimeList'
-import Weather from './components/Header/components/Weather'
-
+import ScheduleHeader from './components/Header'
 // import CourseDetailFloatLayout from '../../components/schedule-component/CourseDetailFloatLayout'
 // import ColorPicker from '../../components/schedule-component/ColorPicker'
 // import CustomScheduleFL from '../../components/schedule-component/CustomScheduleFL'
@@ -19,7 +15,6 @@ import Weather from './components/Header/components/Weather'
 import './index.scss'
 
 function Schedule(props) {
-  const [statusBarHeight, setStatusBarHeight] = useState(28)
   // 手动选择的日期在周视图中的索引
   const [dayIndex, setDayIndex] = useState(0)
   // 当天所在周的第几天
@@ -30,15 +25,26 @@ function Schedule(props) {
   const [otherWeek, setOtherWeek] = useState(0)
   // 当前周的日期
   const [currentWeekIndex, setCurrentWeekIndex] = useState(11)
+  const [scheduleMatrix, setScheduleMatrix] = useState([])
+  const [dayScheduleData, setDayScheduleData] = useState([])
   // header 上显示的日期
   const [dateZh, setDateZh] = useState('')
   // 手动选择的周数第几天
   const weekIndex = 11
   useEffect(() => {
-    setStatusBarHeight(Taro.getSystemInfoSync().statusBarHeight)
     getWeekDay(0)
+    getScheduleMatrix()
   }, [])
 
+
+  const getScheduleMatrix = () => {
+    getSchedule().then(res => {
+      console.log(res)
+      // setScheduleMatrix(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
   // 获取header的星期日期
   const getWeekDay = (obs) => {
     const _weekData = []
@@ -73,6 +79,30 @@ function Schedule(props) {
     setDateZh(weekData[_dayIndex].dateZh)
     setDayIndex(_dayIndex)
   }
+
+  // touch翻页实现
+  let startX = 0;
+  let startY = 0;
+
+  const touchStart = (e) => {
+    const { clientX, clientY } = e.touches[0]
+    startX = clientX
+    startY = clientY
+  }
+  const touchMove = (e) => {
+    const { clientX, clientY } = e.touches[0]
+    const moveX = clientX - startX
+    const moveY = clientY - startY
+    if (Math.abs(moveX) > Math.abs(moveY)) {
+      if (moveX > 0) {
+        swiperDayIndex(-1)
+      } else {
+        swiperDayIndex(1)
+      }
+    }
+  }
+  const touchEnd = () => {
+  }
   const swiperDayIndex = (obs) => {
     const index = dayIndex + obs
     // 右滑到头 跳转至上个星期
@@ -94,16 +124,18 @@ function Schedule(props) {
   }
   return (
     <View className='event'>
+      <ScheduleHeader
+        dateZh={dateZh}
+        currentWeekIndex={currentWeekIndex}
+        weekData={weekData}
+        currentDayIndex={currentDayIndex}
+        dayIndex={dayIndex}
+        handleClickDay={getClickDayIndex}>
+      </ScheduleHeader>
 
-      <View className='event-header' style={{ paddingTop: statusBarHeight + 44 }}>
-        <Weather statusBarHeight={statusBarHeight} />
-        <EventHeaderTitle dateZh={dateZh} currentWeekIndex={currentWeekIndex} />
-        <EventTimePicker weekData={weekData} currentDayIndex={currentDayIndex} dayIndex={dayIndex} handleClickDay={getClickDayIndex} />
-      </View>
-      <View className='event-content'>
+      <View className='event-content' onTouchStart={(e) => touchStart(e)} onTouchMove={(e) => { touchMove(e) }} onTouchEnd={(e) => { touchEnd(e) }}>
         <EventTimeList swiperDayIndex={swiperDayIndex} isToday={dayIndex === currentDayIndex && weekIndex === currentWeekIndex} />
-        {/* TODO */}
-        <EventTable currentDayIndex={currentDayIndex} weekIndex={weekIndex} currentWeekIndex={currentWeekIndex} />
+        <EventTable dayScheduleData={scheduleMatrix[dayIndex]} currentDayIndex={currentDayIndex} weekIndex={weekIndex} currentWeekIndex={currentWeekIndex} />
       </View>
 
       {/* 作用？？？ */}

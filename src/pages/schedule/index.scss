@@ -4,7 +4,7 @@
 .event {
   height: 100%;
   width: 100%;
-
+  
   &-header {
     top: 0px;
     width: 100%;
@@ -14,7 +14,7 @@
     box-shadow: 0 4px 10px #eee;
     border-bottom-right-radius: 42px;
     border-bottom-left-radius: 42px;
-    
+    z-index: 10;
   }
 
   &-content {
