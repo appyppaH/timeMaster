@@ -1,0 +1,14 @@
+@import '../../style/theme.scss';
+
+.custom-color-button {
+  position: relative;
+  z-index: 10;
+  height: 100px;
+  border: none;
+  border-radius: 50px;
+  font-size: 34px;
+  line-height: 100px;
+  text-align: center;
+  // color: #ffffff;
+
+}

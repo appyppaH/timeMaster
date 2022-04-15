@@ -8,7 +8,7 @@ import { View } from '@tarojs/components'
 import EventTable from './components/EventTable'
 import EventTimeList from './components/EventTimeList'
 import ScheduleHeader from './components/Header'
-// import CourseDetailFloatLayout from '../../components/schedule-component/CourseDetailFloatLayout'
+import CourseDetailFloatLayout from '../../components/schedule-component/CourseDetailFloatLayout'
 // import ColorPicker from '../../components/schedule-component/ColorPicker'
 // import CustomScheduleFL from '../../components/schedule-component/CustomScheduleFL'
 
@@ -22,27 +22,33 @@ class Schedule extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      // 实际时间
       dayIndex: 0,
-      currentDayIndex: 0,
       weekIndex: 1,
+      // 现在所选的时间
+      currentDayIndex: 0,
       currentWeekIndex: 1,
+
       weekData: [],
       otherWeek: 0,
       scheduleMatrix: [],
-      dayScheduleData: [],
-      dateZh: dayjs().format('YYYY/MM/DD')
+      dailyScheduleNumber: 0,
+      dateZh: dayjs().format('YYYY/MM/DD'),
+      //
+      course: [],
+      courseDetailIsOpened: false,
     }
   }
   componentWillMount() {
     this.getWeekDay(0)
-    this.getDayScheduleData()
+    this.getScheduleMatrix()
   }
-  getDayScheduleData = (dateZh) => {
+  getScheduleMatrix = (dateZh) => {
     const startTime = dayjs(dateZh).valueOf() + 25231231
     const endTime = dayjs(dateZh).valueOf() + 82800000
     getSchedule(startTime, endTime).then(res => {
       this.setState({
-        dayScheduleData: res.data.result
+        scheduleMatrix: res.data.result
       })
     }).catch(err => {
       console.log(err)
@@ -63,8 +69,11 @@ class Schedule extends Component {
         const _today = false
         _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
       }
-      _dateZh = _weekData[6 - this.state.dayIndex].dateZh
-      _index = - 1
+      this.setState({
+        currentDayIndex: -1,
+        dateZh: _weekData[6 - this.state.currentDayIndex].dateZh,
+        weekData: _weekData
+      })
     } else {
       for (var i = 1; i <= 7; i++) {
         const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
@@ -75,19 +84,21 @@ class Schedule extends Component {
         }
         _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
       }
+      this.setState({
+        currentDayIndex: _index,
+        dayIndex: _index,
+        dateZh: _weekData[_index].dateZh,
+        weekData: _weekData
+      })
     }
-    this.setState({
-      currentDayIndex: _index,
-      dayIndex: _index,
-      dateZh: _dateZh,
-      weekData: _weekData
-    })
+
   }
 
-  getClickDayIndex = (_dayIndex) => {
+  getClickDayIndex = (_currentdayIndex) => {
     this.setState({
-      dateZh: this.state.weekData[_dayIndex].dateZh,
-      dayIndex: _dayIndex,
+      dateZh: this.state.weekData[_currentdayIndex].dateZh,
+      currentDayIndex: _currentdayIndex,
+      dailyScheduleNumber: this.state.scheduleMatrix[_currentdayIndex]["allSchedule"]
     })
   }
 
@@ -105,39 +116,51 @@ class Schedule extends Component {
   touchEnd = () => {
     if (Math.abs(moveX) > 50 && Math.abs(moveX) > Math.abs(moveY)) {
       if (moveX > 0) {
+        startX = 0
+        startY = 0
+        moveX = 0
+        moveY = 0
         this.swiperDayIndex(-1)
       } else {
+        startX = 0
+        startY = 0
+        moveX = 0
+        moveY = 0
         this.swiperDayIndex(1)
       }
     }
   }
   swiperDayIndex = (obs) => {
-    const index = this.state.dayIndex + obs
+    const index = this.state.currentDayIndex + obs
     // 右滑到头 跳转至上个星期
     if (index < 0) {
       this.getWeekDay(this.state.otherWeek + 1)
       this.setState({
         otherWeek: this.state.otherWeek + 1,
-        currentWeekIndex: this.state.currentWeekIndex - 1,
-        dayIndex: 6,
+        currentDayIndex: 6,
       })
-      this.getDayScheduleData()
+      this.getScheduleMatrix()
       // 左滑到头、跳转至下个星期
     } else if (index > 6) {
       this.getWeekDay(this.state.otherWeek - 1)
       this.setState({
         otherWeek: this.state.otherWeek - 1,
-        currentWeekIndex: this.state.currentWeekIndex + 1,
-        dayIndex: 0,
+        currentDayIndex: 0,
       })
-      this.getDayScheduleData()
+      this.getScheduleMatrix()
     } else {
       this.setState({
         dateZh: this.state.weekData[index].dateZh,
-        dayIndex: index,
+        currentDayIndex: index,
+        dailyScheduleNumber: this.state.scheduleMatrix[index]["allSchedule"]
       })
-      this.getDayScheduleData(this.state.weekData[index].dateZh)
     }
+  }
+
+  handleClickCourse = (course) => {
+    this.setState({
+      course: course
+    })
   }
   render() {
     return (
@@ -148,15 +171,27 @@ class Schedule extends Component {
           weekData={this.state.weekData}
           currentDayIndex={this.state.currentDayIndex}
           dayIndex={this.state.dayIndex}
-          handleClickDay={this.getClickDayIndex}>
+          handleClickDay={this.getClickDayIndex}
+          dailyScheduleNumber={this.state.dailyScheduleNumber}>
         </ScheduleHeader>
 
         <View className='event-content' onTouchStart={(e) => this.touchStart(e)} onTouchMove={(e) => { this.touchMove(e) }} onTouchEnd={(e) => { this.touchEnd(e) }}>
           <EventTimeList swiperDayIndex={this.swiperDayIndex} isToday={this.state.dayIndex === this.state.currentDayIndex && this.state.weekIndex === this.state.currentWeekIndex} />
-          <EventTable dayScheduleData={this.state.dayScheduleData} currentDayIndex={this.state.currentDayIndex} weekIndex={this.state.weekIndex} currentWeekIndex={this.state.currentWeekIndex} />
+          {
+            this.state.scheduleMatrix[1] != undefined ?
+              <EventTable handleClickCourse={this.handleClickCourse} dayScheduleData={this.state.scheduleMatrix[this.state.currentDayIndex]} currentDayIndex={this.state.currentDayIndex} weekIndex={this.state.weekIndex} currentWeekIndex={this.state.currentWeekIndex} />
+              : <View></View>
+
+          }
+
         </View>
 
-
+        <CourseDetailFloatLayout
+          course={this.state.course}
+          type={this.state.type}
+          courseDetailIsOpened={this.state.courseDetailIsOpened}
+          onClose={() => { this.setState({ courseDetailIsOpened: false }) }}
+        />
       </View>
 
 

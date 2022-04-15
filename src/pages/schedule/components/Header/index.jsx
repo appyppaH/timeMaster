@@ -5,8 +5,7 @@ import './index.scss'
 import Weather from './components/Weather'
 export default (props) => {
     const [statusBarHeight, setStatusBarHeight] = useState(28)
-    const { dateZh, currentDayIndex, currentWeekIndex, weekData, handleClickDay, dayIndex } = props
-    const [dailyEventNumber, setDailyEventNumber] = useState(0)
+    const { dateZh, currentDayIndex, currentWeekIndex, weekData, handleClickDay, dayIndex,dailyScheduleNumber } = props
     const showCalendar = false
 
     useEffect(() => {
@@ -25,7 +24,7 @@ export default (props) => {
                     </View>
                     <View className='schedule-header-Title-comment'>
                         <Text>今日有</Text>
-                        <Text className='schedule-header-Title-comment-number'>{dailyEventNumber}项</Text>
+                        <Text className='schedule-header-Title-comment-number'>{dailyScheduleNumber}项</Text>
                         <Text>日程</Text>
                     </View>
                 </View>
@@ -56,11 +55,11 @@ export default (props) => {
                         </View>
                         :
                         <View className='schedule-header-timePicker-dayLine'>
-                            {weekData.map((dayData, _dayIndex) => (
+                            {weekData.map((dayData, _currentdayIndex) => (
                                 <View className='schedule-header-timePicker-dayLine-item' key={dayData.dateZh}>
                                     <View
-                                        className={`schedule-header-timePicker-dayLine-box schedule-header-timePicker-dayLine-box_static${_dayIndex === currentDayIndex && dayIndex !== _dayIndex ? '_current' : ''} schedule-header-timePicker-dayLine-box${dayIndex === _dayIndex ? '_active' : ''}`}
-                                        onClick={() => handleClickDay(_dayIndex)}
+                                        className={`schedule-header-timePicker-dayLine-box schedule-header-timePicker-dayLine-box${_currentdayIndex === currentDayIndex ? '_active' : ''} schedule-header-timePicker-dayLine-box_static${dayIndex === _currentdayIndex&& _currentdayIndex !== currentDayIndex  ? '_current' : ''}  `}
+                                        onClick={() => handleClickDay(_currentdayIndex)}
                                     >
                                         <View className='schedule-header-timePicker-dayLine-box_day'>
                                             {dayData.dayZh}

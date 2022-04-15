@@ -10,24 +10,24 @@ export default (props) => {
   const eventBoxHeight = 0.8
   const theme = 0
 
-  const { dayScheduleData, weekIndex, dayIndex } = props
-  if (!dayScheduleData) {
-    return ""
-  } else {
-    //计算课程与上一个课程距离 的以及总长度F
-    const diffTime = (startTime, endTime) => {
-      const startDate = new Date('2000/05/21 ' + startTime).getTime()
-      const endDate = new Date('2000/05/21 ' + endTime).getTime()
-      return (endDate - startDate) / 60000
-    }
-    dayScheduleData.map((course, index) => {
-      const range = course.timeRange
-      course["startTime"] = diffTime("7:00", range[0])
-      course["allTime"] = diffTime(range[0], range[1])
-      // 50 是一节课的时间（45+5分钟课间）
-      course["timeNum"] = course["allTime"] / 50
-    }, [])
+  const { dayScheduleData, weekIndex, dayIndex, handleClickCourse } = props
+
+  //计算课程与上一个课程距离 的以及总长度F
+  const diffTime = (startTime, endTime) => {
+    const startDate = new Date('2000/05/21 ' + startTime).getTime()
+    const endDate = new Date('2000/05/21 ' + endTime).getTime()
+    return (endDate - startDate) / 60000
   }
+  for (var i in dayScheduleData) {
+    for (var j in dayScheduleData[i]) {
+      dayScheduleData[i][j]["startTime"] = diffTime("7:00", dayScheduleData[i][j].timeRange[0])
+      dayScheduleData[i][j]["allTime"] = diffTime(dayScheduleData[i][j].timeRange[0], dayScheduleData[i][j].timeRange[1])
+      dayScheduleData[i][j]["timeNum"] = dayScheduleData[i][j]["allTime"] / 50
+    }
+
+  }
+
+
 
   // console.log(dayScheduleData)
   // const timeTable = [
@@ -58,15 +58,13 @@ export default (props) => {
   //   })
   // }
 
-  const handleClickCourse = (course) => {
-    console.log(course)
-  }
+
 
 
   return (
     <View className='eventTable' style={{ top: '0' }}>
       {
-        dayScheduleData.map((course, i) => (
+        dayScheduleData["course"].map((course, i) => (
           <View
             className={`eventTable-course courseBox-boxColor-${course.color}_${theme}`}
             style={{
@@ -89,6 +87,15 @@ export default (props) => {
                   fontSize: (eventBoxHeight === 1 ? 12 : 14) + 'px',
                 }}
               >{course.clazzRoom}</View>
+            }
+            {
+              course.timeNum >= 2 &&
+              <View
+                className={`eventTable-course-clazzRoom courseBox-fontColor-${course.color}_${theme}`}
+                style={{
+                  fontSize: (eventBoxHeight === 1 ? 12 : 14) + 'px',
+                }}
+              >{course.memo}</View>
             }
           </View>
         ))
