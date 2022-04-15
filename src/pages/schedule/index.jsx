@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { Component, useState, useEffect } from 'react'
 import Taro, { usePullDownRefresh } from '@tarojs/taro'
 import { connect } from 'react-redux'
 import * as dayjs from 'dayjs'
@@ -13,45 +13,49 @@ import ScheduleHeader from './components/Header'
 // import CustomScheduleFL from '../../components/schedule-component/CustomScheduleFL'
 
 import './index.scss'
+let startX = 0;
+let startY = 0;
+let moveX = 0;
+let moveY = 0;
+class Schedule extends Component {
 
-function Schedule(props) {
-  // 手动选择的日期在周视图中的索引
-  const [dayIndex, setDayIndex] = useState(0)
-  // 当天所在周的第几天
-  const [currentDayIndex, setCurrentDayIndex] = useState(0)
-  // timePicker的显示日期
-  const [weekData, setWeekData] = useState([])
-  // 选择的日期相对于当前日期的偏移量
-  const [otherWeek, setOtherWeek] = useState(0)
-  // 当前周的日期
-  const [currentWeekIndex, setCurrentWeekIndex] = useState(11)
-  const [scheduleMatrix, setScheduleMatrix] = useState([])
-  const [dayScheduleData, setDayScheduleData] = useState([])
-  // header 上显示的日期
-  const [dateZh, setDateZh] = useState('')
-  // 手动选择的周数第几天
-  const weekIndex = 11
-  useEffect(() => {
-    getWeekDay(0)
-    getScheduleMatrix()
-  }, [])
-
-
-  const getScheduleMatrix = () => {
-    getSchedule().then(res => {
-      console.log(res)
-      // setScheduleMatrix(res)
+  constructor(props) {
+    super(props)
+    this.state = {
+      dayIndex: 0,
+      currentDayIndex: 0,
+      weekIndex: 1,
+      currentWeekIndex: 1,
+      weekData: [],
+      otherWeek: 0,
+      scheduleMatrix: [],
+      dayScheduleData: [],
+      dateZh: dayjs().format('YYYY/MM/DD')
+    }
+  }
+  componentWillMount() {
+    this.getWeekDay(0)
+    this.getDayScheduleData()
+  }
+  getDayScheduleData = (dateZh) => {
+    const startTime = dayjs(dateZh).valueOf() + 25231231
+    const endTime = dayjs(dateZh).valueOf() + 82800000
+    getSchedule(startTime, endTime).then(res => {
+      this.setState({
+        dayScheduleData: res.data.result
+      })
     }).catch(err => {
       console.log(err)
     })
   }
-  // 获取header的星期日期
-  const getWeekDay = (obs) => {
+  getWeekDay = (obs) => {
     const _weekData = []
+    let _index = 0
+    let _dateZh = this.state.dateZh
     var l = ["一", "二", "三", "四", "五", "六", "日"];
     const __today = dayjs().format('YYYY/MM/DD')
+
     if (obs !== 0) {
-      setCurrentDayIndex(-1)
       const _otherWeek = dayjs().subtract(obs, 'weeks')
       for (var i = 1; i <= 7; i++) {
         const _dateZh = _otherWeek.startOf('week').add(i, 'day').format('YYYY/MM/DD')
@@ -59,151 +63,219 @@ function Schedule(props) {
         const _today = false
         _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
       }
-      setDateZh(_weekData[6 - dayIndex].dateZh)
+      _dateZh = _weekData[6 - this.state.dayIndex].dateZh
+      _index = - 1
     } else {
       for (var i = 1; i <= 7; i++) {
         const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
         const _dayZh = "周" + l[i - 1]
         const _today = __today === _dateZh ? true : false
         if (_today) {
-          setCurrentDayIndex(i - 1)
-          setDayIndex(i - 1)
+          _index = i - 1
         }
         _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
       }
-      setDateZh(_weekData[dayIndex].dateZh)
     }
-    setWeekData(_weekData)
+    this.setState({
+      currentDayIndex: _index,
+      dayIndex: _index,
+      dateZh: _dateZh,
+      weekData: _weekData
+    })
   }
-  const getClickDayIndex = (_dayIndex) => {
-    setDateZh(weekData[_dayIndex].dateZh)
-    setDayIndex(_dayIndex)
+
+  getClickDayIndex = (_dayIndex) => {
+    this.setState({
+      dateZh: this.state.weekData[_dayIndex].dateZh,
+      dayIndex: _dayIndex,
+    })
   }
 
   // touch翻页实现
-  let startX = 0;
-  let startY = 0;
-
-  const touchStart = (e) => {
+  touchStart = (e) => {
     const { clientX, clientY } = e.touches[0]
     startX = clientX
     startY = clientY
   }
-  const touchMove = (e) => {
+  touchMove = (e) => {
     const { clientX, clientY } = e.touches[0]
-    const moveX = clientX - startX
-    const moveY = clientY - startY
-    if (Math.abs(moveX) > Math.abs(moveY)) {
+    moveX = clientX - startX
+    moveY = clientY - startY
+  }
+  touchEnd = () => {
+    if (Math.abs(moveX) > 50 && Math.abs(moveX) > Math.abs(moveY)) {
       if (moveX > 0) {
-        swiperDayIndex(-1)
+        this.swiperDayIndex(-1)
       } else {
-        swiperDayIndex(1)
+        this.swiperDayIndex(1)
       }
     }
   }
-  const touchEnd = () => {
-  }
-  const swiperDayIndex = (obs) => {
-    const index = dayIndex + obs
+  swiperDayIndex = (obs) => {
+    const index = this.state.dayIndex + obs
     // 右滑到头 跳转至上个星期
     if (index < 0) {
-      getWeekDay(otherWeek + 1)
-      setOtherWeek(otherWeek + 1)
-      setCurrentWeekIndex(currentWeekIndex - 1)
-      setDayIndex(6)
+      this.getWeekDay(this.state.otherWeek + 1)
+      this.setState({
+        otherWeek: this.state.otherWeek + 1,
+        currentWeekIndex: this.state.currentWeekIndex - 1,
+        dayIndex: 6,
+      })
+      this.getDayScheduleData()
       // 左滑到头、跳转至下个星期
     } else if (index > 6) {
-      getWeekDay(otherWeek - 1, 1)
-      setOtherWeek(otherWeek - 1)
-      setCurrentWeekIndex(currentWeekIndex + 1)
-      setDayIndex(0)
+      this.getWeekDay(this.state.otherWeek - 1)
+      this.setState({
+        otherWeek: this.state.otherWeek - 1,
+        currentWeekIndex: this.state.currentWeekIndex + 1,
+        dayIndex: 0,
+      })
+      this.getDayScheduleData()
     } else {
-      setDateZh(weekData[index].dateZh)
-      setDayIndex(index)
+      this.setState({
+        dateZh: this.state.weekData[index].dateZh,
+        dayIndex: index,
+      })
+      this.getDayScheduleData(this.state.weekData[index].dateZh)
     }
   }
-  return (
-    <View className='event'>
-      <ScheduleHeader
-        dateZh={dateZh}
-        currentWeekIndex={currentWeekIndex}
-        weekData={weekData}
-        currentDayIndex={currentDayIndex}
-        dayIndex={dayIndex}
-        handleClickDay={getClickDayIndex}>
-      </ScheduleHeader>
+  render() {
+    return (
+      <View className='event'>
+        <ScheduleHeader
+          dateZh={this.state.dateZh}
+          currentWeekIndex={this.state.currentWeekIndex}
+          weekData={this.state.weekData}
+          currentDayIndex={this.state.currentDayIndex}
+          dayIndex={this.state.dayIndex}
+          handleClickDay={this.getClickDayIndex}>
+        </ScheduleHeader>
 
-      <View className='event-content' onTouchStart={(e) => touchStart(e)} onTouchMove={(e) => { touchMove(e) }} onTouchEnd={(e) => { touchEnd(e) }}>
-        <EventTimeList swiperDayIndex={swiperDayIndex} isToday={dayIndex === currentDayIndex && weekIndex === currentWeekIndex} />
-        <EventTable dayScheduleData={scheduleMatrix[dayIndex]} currentDayIndex={currentDayIndex} weekIndex={weekIndex} currentWeekIndex={currentWeekIndex} />
+        <View className='event-content' onTouchStart={(e) => this.touchStart(e)} onTouchMove={(e) => { this.touchMove(e) }} onTouchEnd={(e) => { this.touchEnd(e) }}>
+          <EventTimeList swiperDayIndex={this.swiperDayIndex} isToday={this.state.dayIndex === this.state.currentDayIndex && this.state.weekIndex === this.state.currentWeekIndex} />
+          <EventTable dayScheduleData={this.state.dayScheduleData} currentDayIndex={this.state.currentDayIndex} weekIndex={this.state.weekIndex} currentWeekIndex={this.state.currentWeekIndex} />
+        </View>
+
+
       </View>
 
-      {/* 作用？？？ */}
-      {/* <View className='event-whiteBackground'></View> */}
 
-      {/* <CourseDetailFloatLayout
-        courseDetailFLData={courseDetailFLData}
-        source='event'
-        onClose={() => { props.updateUiData({ courseDetailFLData: { ...courseDetailFLData, isOpened: false } }) }}
-        updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({
-          colorPickerData: { isOpened: true, handleColorChange, theme, color },
-          courseDetailFLData: { ...courseDetailFLData, showMemo: false }
-        })}
-        openCustomScheduleFL={({ dayIndex, startTime, courseType, chosenWeeks }) => props.updateUiData({
-          customScheduleFLData: {
-            ...courseDetailFLData,
-            isOpened: true,
-            type: 'change',
-            dayIndex,
-            startTime,
-            courseType,
-            chosenWeeks,
-            currentWeekIndex: currentWeekIndex + 1,
-          },
-          chosenBlank: [],
-          courseDetailFLData: { ...courseDetailFLData, showMemo: false }
-        })}
-      /> */}
 
-      {/* <CustomScheduleFL
-        isOpened={customScheduleFLData.isOpened}
-        customScheduleFLData={customScheduleFLData}
-        updateData={(newData) => props.updateUiData({
-          customScheduleFLData: {
-            ...customScheduleFLData,
-            ...newData,
-          }
-        })}
-        source='event'
-        updateCourseDetailFL={(data) => props.updateUiData({
-          courseDetailFLData: {
-            ...courseDetailFLData,
-            ...data
-          }
-        })}
-        onClose={() => props.updateUiData({
-          customScheduleFLData: { isOpened: false },
-          courseDetailFLData: { ...courseDetailFLData, showMemo: true }
-        })}
-        scheduleMatrix={scheduleMatrix}
-        timeTable={timeTable}
-        weekIndex={weekIndex}
-        updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({ colorPickerData: { isOpened: true, handleColorChange, theme, color } })}
-      /> */}
+    )
+  }
 
-      {/* <ColorPicker
-        isOpened={colorPickerData.isOpened}
-        onClose={() => props.updateUiData({
-          colorPickerData: { isOpened: false },
-          courseDetailFLData: { ...courseDetailFLData, showMemo: true }
-        })}
-        handleColorChange={colorPickerData.handleColorChange}
-        theme={colorPickerData.theme}
-        currentColor={colorPickerData.currentColor}
-      /> */}
-    </View>
-  )
 }
+
+
+
+// function Schedule(props) {
+//   // 手动选择的日期在周视图中的索引
+//   const [dayIndex, setDayIndex] = useState(0)
+//   // 当天所在周的第几天
+//   const [currentDayIndex, setCurrentDayIndex] = useState(0)
+//   // timePicker的显示日期
+//   const [weekData, setWeekData] = useState([])
+//   // 选择的日期相对于当前日期的偏移量
+//   const [otherWeek, setOtherWeek] = useState(0)
+//   // 当前周的日期
+//   const [currentWeekIndex, setCurrentWeekIndex] = useState(11)
+//   const [scheduleMatrix, setScheduleMatrix] = useState([])
+//   const [dayScheduleData, setDayScheduleData] = useState([])
+//   // header 上显示的日期
+//   const [dateZh, setDateZh] = useState(dayjs().format('YYYY/MM/DD'))
+//   // 手动选择的周数第几天
+//   const weekIndex = 11
+//   useEffect(() => {
+//     getWeekDay(0)
+//     getDayScheduleData(dateZh)
+//   }, [dateZh])
+
+
+
+
+
+//   return (
+//     <View className='event'>
+//       <ScheduleHeader
+//         dateZh={dateZh}
+//         currentWeekIndex={currentWeekIndex}
+//         weekData={weekData}
+//         currentDayIndex={currentDayIndex}
+//         dayIndex={dayIndex}
+//         handleClickDay={getClickDayIndex}>
+//       </ScheduleHeader>
+
+//       <View className='event-content' onTouchStart={(e) => touchStart(e)} onTouchMove={(e) => { touchMove(e) }} onTouchEnd={(e) => { touchEnd(e) }}>
+//         <EventTimeList swiperDayIndex={swiperDayIndex} isToday={dayIndex === currentDayIndex && weekIndex === currentWeekIndex} />
+//         <EventTable dayScheduleData={dayScheduleData} currentDayIndex={currentDayIndex} weekIndex={weekIndex} currentWeekIndex={currentWeekIndex} />
+//       </View>
+
+//       {/* 作用？？？ */}
+//       {/* <View className='event-whiteBackground'></View> */}
+
+//       {/* <CourseDetailFloatLayout
+//         courseDetailFLData={courseDetailFLData}
+//         source='event'
+//         onClose={() => { props.updateUiData({ courseDetailFLData: { ...courseDetailFLData, isOpened: false } }) }}
+//         updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({
+//           colorPickerData: { isOpened: true, handleColorChange, theme, color },
+//           courseDetailFLData: { ...courseDetailFLData, showMemo: false }
+//         })}
+//         openCustomScheduleFL={({ dayIndex, startTime, courseType, chosenWeeks }) => props.updateUiData({
+//           customScheduleFLData: {
+//             ...courseDetailFLData,
+//             isOpened: true,
+//             type: 'change',
+//             dayIndex,
+//             startTime,
+//             courseType,
+//             chosenWeeks,
+//             currentWeekIndex: currentWeekIndex + 1,
+//           },
+//           chosenBlank: [],
+//           courseDetailFLData: { ...courseDetailFLData, showMemo: false }
+//         })}
+//       /> */}
+
+//       {/* <CustomScheduleFL
+//         isOpened={customScheduleFLData.isOpened}
+//         customScheduleFLData={customScheduleFLData}
+//         updateData={(newData) => props.updateUiData({
+//           customScheduleFLData: {
+//             ...customScheduleFLData,
+//             ...newData,
+//           }
+//         })}
+//         source='event'
+//         updateCourseDetailFL={(data) => props.updateUiData({
+//           courseDetailFLData: {
+//             ...courseDetailFLData,
+//             ...data
+//           }
+//         })}
+//         onClose={() => props.updateUiData({
+//           customScheduleFLData: { isOpened: false },
+//           courseDetailFLData: { ...courseDetailFLData, showMemo: true }
+//         })}
+//         scheduleMatrix={scheduleMatrix}
+//         timeTable={timeTable}
+//         weekIndex={weekIndex}
+//         updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({ colorPickerData: { isOpened: true, handleColorChange, theme, color } })}
+//       /> */}
+
+//       {/* <ColorPicker
+//         isOpened={colorPickerData.isOpened}
+//         onClose={() => props.updateUiData({
+//           colorPickerData: { isOpened: false },
+//           courseDetailFLData: { ...courseDetailFLData, showMemo: true }
+//         })}
+//         handleColorChange={colorPickerData.handleColorChange}
+//         theme={colorPickerData.theme}
+//         currentColor={colorPickerData.currentColor}
+//       /> */}
+//     </View>
+//   )
+// }
 
 // function mapStateToProps(state) {
 //   return {

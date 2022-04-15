@@ -5,7 +5,7 @@ import { HTTP_STATUS } from './config'
 const customInterceptor = (chain) => {
 
   const requestParams = chain.requestParams
-
+  Taro.showNavigationBarLoading()
   return chain.proceed(requestParams).then(res => {
     // 只要请求成功，不管返回什么状态码，都走这个回调
     if (res.statusCode === HTTP_STATUS.NOT_FOUND) {
@@ -21,17 +21,17 @@ const customInterceptor = (chain) => {
       return Promise.reject("登录过期，请重新登录")
 
     } else if (res.statusCode === HTTP_STATUS.SUCCESS) {
-      // console.log("请求成功：", res.statusCode)
-      // if (res.statusCode!=200||res.data.code!=20000){
-      //   Taro.atMessage({
-      //     'message': res.data.message,
-      //     'type': 'warning',
-      //     duration: 2000,
-      //   })
-      //   return Promise.reject(res.data)
-      // }else{
-      return res
-      // }
+      Taro.hideNavigationBarLoading()
+      if (res.data.code != undefined && res.data.code != 200) {
+        Taro.showToast({
+          'message': res.data.result.errMsg,
+          'type': 'warning',
+          duration: 2000,
+        })
+        return Promise.reject(res)
+      } else {
+        return res
+      }
     }
   })
 }
