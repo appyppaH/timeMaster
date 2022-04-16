@@ -3,7 +3,7 @@ import Taro, { usePullDownRefresh } from '@tarojs/taro'
 import { connect } from 'react-redux'
 import * as dayjs from 'dayjs'
 
-import { getSchedule } from '../../servers/servers.js'
+import { getSchedule, updateMemo } from '../../servers/servers.js'
 import { View } from '@tarojs/components'
 import EventTable from './components/EventTable'
 import EventTimeList from './components/EventTimeList'
@@ -44,11 +44,20 @@ class Schedule extends Component {
     this.getScheduleMatrix()
   }
   getScheduleMatrix = (dateZh) => {
-    const startTime = dayjs(dateZh).valueOf() + 25231231
-    const endTime = dayjs(dateZh).valueOf() + 82800000
+    let startTime = 0
+    let endTime = 0
+    if (dateZh) {
+      startTime = dayjs(dateZh).valueOf() + 25231231
+      endTime = dayjs(dateZh).add(6, "day").valueOf() + 82800000
+    } else {
+      startTime = dayjs().startOf("day").valueOf() + 25231231
+      endTime = dayjs().startOf("day").valueOf() + 82800000
+    }
+
     getSchedule(startTime, endTime).then(res => {
       this.setState({
-        scheduleMatrix: res.data.result
+        scheduleMatrix: res.data.result,
+        dailyScheduleNumber: res.data.result[this.state.currentDayIndex]["allSchedule"]
       })
     }).catch(err => {
       console.log(err)
@@ -74,6 +83,7 @@ class Schedule extends Component {
         dateZh: _weekData[6 - this.state.currentDayIndex].dateZh,
         weekData: _weekData
       })
+      this.getScheduleMatrix(_weekData[0].dateZh)
     } else {
       for (var i = 1; i <= 7; i++) {
         const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
@@ -114,7 +124,7 @@ class Schedule extends Component {
     moveY = clientY - startY
   }
   touchEnd = () => {
-    if (Math.abs(moveX) > 50 && Math.abs(moveX) > Math.abs(moveY)) {
+    if (Math.abs(moveX) > 30 && Math.abs(moveX) > Math.abs(moveY)) {
       if (moveX > 0) {
         startX = 0
         startY = 0
@@ -137,17 +147,18 @@ class Schedule extends Component {
       this.getWeekDay(this.state.otherWeek + 1)
       this.setState({
         otherWeek: this.state.otherWeek + 1,
+        currentWeekIndex: this.state.currentWeekIndex - 1,
         currentDayIndex: 6,
       })
-      this.getScheduleMatrix()
+
       // 左滑到头、跳转至下个星期
     } else if (index > 6) {
       this.getWeekDay(this.state.otherWeek - 1)
       this.setState({
         otherWeek: this.state.otherWeek - 1,
+        currentWeekIndex: this.state.currentWeekIndex + 1,
         currentDayIndex: 0,
       })
-      this.getScheduleMatrix()
     } else {
       this.setState({
         dateZh: this.state.weekData[index].dateZh,
@@ -157,16 +168,36 @@ class Schedule extends Component {
     }
   }
 
-  handleClickCourse = (course) => {
+  handleClickCourse = (course, type) => {
     this.setState({
+      course: course,
+      type: type,
+      courseDetailIsOpened: true
+    })
+  }
+  handleUpdateMemo = (course) => {
+    // TODO：这里可能会出现一天上同一节课的情况（即课程id相同），需要改进
+    updateMemo(this.state.currentDayIndex, this.state.currentWeekIndex, course.lessonCode, course.memo).then(res => {
+      console.log(res)
+    }).catch(err => {
+      Taro.showToast({
+        title: '更新备注失败',
+        icon: 'none',
+        duration: 2000
+      })
+    })
+    this.setState({
+      courseDetailIsOpened: false,
       course: course
     })
   }
+
   render() {
     return (
       <View className='event'>
         <ScheduleHeader
           dateZh={this.state.dateZh}
+          weekIndex={this.state.weekIndex}
           currentWeekIndex={this.state.currentWeekIndex}
           weekData={this.state.weekData}
           currentDayIndex={this.state.currentDayIndex}
@@ -181,7 +212,6 @@ class Schedule extends Component {
             this.state.scheduleMatrix[1] != undefined ?
               <EventTable handleClickCourse={this.handleClickCourse} dayScheduleData={this.state.scheduleMatrix[this.state.currentDayIndex]} currentDayIndex={this.state.currentDayIndex} weekIndex={this.state.weekIndex} currentWeekIndex={this.state.currentWeekIndex} />
               : <View></View>
-
           }
 
         </View>
@@ -190,12 +220,34 @@ class Schedule extends Component {
           course={this.state.course}
           type={this.state.type}
           courseDetailIsOpened={this.state.courseDetailIsOpened}
-          onClose={() => { this.setState({ courseDetailIsOpened: false }) }}
+          onClose={this.handleUpdateMemo}
         />
+    {/* <CustomScheduleFL
+        isOpened={customScheduleFLData.isOpened}
+        customScheduleFLData={customScheduleFLData}
+        updateData={(newData) => props.updateUiData({
+          customScheduleFLData: {
+            ...customScheduleFLData,
+            ...newData,
+          }
+        })}
+        source='event'
+        updateCourseDetailFL={(data) => props.updateUiData({
+          courseDetailFLData: {
+            ...courseDetailFLData,
+            ...data
+          }
+        })}
+        onClose={() => props.updateUiData({
+          customScheduleFLData: { isOpened: false },
+          courseDetailFLData: { ...courseDetailFLData, showMemo: true }
+        })}
+        scheduleMatrix={scheduleMatrix}
+        timeTable={timeTable}
+        weekIndex={weekIndex}
+        updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({ colorPickerData: { isOpened: true, handleColorChange, theme, color } })}
+      /> */}
       </View>
-
-
-
     )
   }
 
@@ -272,31 +324,7 @@ class Schedule extends Component {
 //         })}
 //       /> */}
 
-//       {/* <CustomScheduleFL
-//         isOpened={customScheduleFLData.isOpened}
-//         customScheduleFLData={customScheduleFLData}
-//         updateData={(newData) => props.updateUiData({
-//           customScheduleFLData: {
-//             ...customScheduleFLData,
-//             ...newData,
-//           }
-//         })}
-//         source='event'
-//         updateCourseDetailFL={(data) => props.updateUiData({
-//           courseDetailFLData: {
-//             ...courseDetailFLData,
-//             ...data
-//           }
-//         })}
-//         onClose={() => props.updateUiData({
-//           customScheduleFLData: { isOpened: false },
-//           courseDetailFLData: { ...courseDetailFLData, showMemo: true }
-//         })}
-//         scheduleMatrix={scheduleMatrix}
-//         timeTable={timeTable}
-//         weekIndex={weekIndex}
-//         updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({ colorPickerData: { isOpened: true, handleColorChange, theme, color } })}
-//       /> */}
+
 
 //       {/* <ColorPicker
 //         isOpened={colorPickerData.isOpened}

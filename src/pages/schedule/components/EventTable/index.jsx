@@ -64,41 +64,52 @@ export default (props) => {
   return (
     <View className='eventTable' style={{ top: '0' }}>
       {
-        dayScheduleData["course"].map((course, i) => (
-          <View
-            className={`eventTable-course courseBox-boxColor-${course.color}_${theme}`}
-            style={{
-              height: (course.allTime) * eventBoxHeight + 'px',
-              paddingLeft: 18 * eventBoxHeight + 'px',
-              paddingRight: 18 * eventBoxHeight + 'px',
-              top: course.startTime * eventBoxHeight + 'px',
-            }}
-            onClick={() => handleClickCourse(course)}
-          >
-            <View
-              className={`eventTable-course-name courseBox-fontColor-${course.color}_${theme}`}
-              style={{ fontSize: (eventBoxHeight === 1 ? 14 : 16) + 'px' }}
-            >{course.name}</View>
-            {
-              course.timeNum > 1 &&
-              <View
-                className={`eventTable-course-clazzRoom courseBox-fontColor-${course.color}_${theme}`}
-                style={{
-                  fontSize: (eventBoxHeight === 1 ? 12 : 14) + 'px',
-                }}
-              >{course.clazzRoom}</View>
-            }
-            {
-              course.timeNum >= 2 &&
-              <View
-                className={`eventTable-course-clazzRoom courseBox-fontColor-${course.color}_${theme}`}
-                style={{
-                  fontSize: (eventBoxHeight === 1 ? 12 : 14) + 'px',
-                }}
-              >{course.memo}</View>
-            }
-          </View>
-        ))
+
+        Object.keys(dayScheduleData).map((type) => {
+          if (type != 'allSchedule') {
+            return (<View style={{ width: "inherit" }}>
+              {
+                dayScheduleData[type].map((schedule, i) => {
+                  return (<View
+                    className={`eventTable-course courseBox-boxColor-${schedule.color}_${theme}`}
+                    style={{
+                      height: (schedule.allTime) * eventBoxHeight + 'px',
+                      paddingLeft: 18 * eventBoxHeight + 'px',
+                      paddingRight: 18 * eventBoxHeight + 'px',
+                      top: schedule.startTime * eventBoxHeight + 'px',
+                    }}
+                    onClick={() => handleClickCourse(schedule, type)}
+                  >
+                    <View
+                      className={`eventTable-course-name courseBox-fontColor-${schedule.color}_${theme}`}
+                      style={{ fontSize: (eventBoxHeight === 1 ? 14 : 16) + 'px' }}
+                    >{schedule.name}</View>
+                    {
+                      schedule.timeNum > 1 &&
+                      <View
+                        className={`eventTable-course-clazzRoom courseBox-fontColor-${schedule.color}_${theme}`}
+                        style={{
+                          fontSize: (eventBoxHeight === 1 ? 12 : 14) + 'px',
+                        }}
+                      >{schedule.clazzRoom}</View>
+                    }
+                    {
+                      schedule.timeNum >= 2 &&
+                      <View
+                        className={`eventTable-course-clazzRoom courseBox-fontColor-${schedule.color}_${theme}`}
+                        style={{
+                          fontSize: (eventBoxHeight === 1 ? 12 : 14) + 'px',
+                        }}
+                      >{schedule.memo}</View>
+                    }
+                  </View>)
+                })
+              }
+            </View>)
+          }
+
+        })
+
       }
     </View>
   )

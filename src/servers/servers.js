@@ -19,11 +19,10 @@ export function notice(kcmc, sksj, skdd, skls, tx) {
   return HTTPREQUEST.post("wxmini/notice", { kcmc: kcmc, sksj: sksj, skdd: skdd, skls: skls, tx: tx })
 }
 
+
+
 export function getUserName() {
   return HTTPREQUEST.get('wxmini/username')
-}
-export function getPages() {
-  return HTTPREQUEST.get('wxmini/pages')
 }
 
 export function getSchedule(startTime, endTime) {
@@ -38,6 +37,10 @@ export function getCalendar(value) {
   } else {
     console.log("getCalendar:参数出错：", value)
   }
+}
+
+export function updateMemo(currentdayindex, currentweekindex, lessoncode, memo) {
+  return HTTPREQUEST.post("student/updateMemo", { currentdayindex: currentdayindex, currentweekindex: currentweekindex, lessoncode: lessoncode, memo: memo })
 }
 
 export function getAllScores() {

@@ -11,23 +11,24 @@ import './index.scss'
 
 export default (props) => {
   const { course, courseDetailIsOpened, onClose, type } = props
-  if (course == undefined) { return "" }
-  const { name, credits, clazzRoom, teacher, timeRange, lessonCode, lessonType, timeIndexes, dayIndex, studentClazzes, studentNumber, weekIndexes = [], weekIndexesZh, semestercode, color, memo: memo_ } = course
+  if (course == []) { return "" }
+  const { name, credits, clazzRoom, teacher, timeRange, lessonCode, lessonType, timeIndexes, dayIndex, studentClazzes, studentNumber, weekIndexes = [], weekIndexesZh, semestercode, color } = course
   const userType = "me"
   const theme = 0
-  const [memo, setMemo] = useState('')
+
+  const [memo, setMemo] = useState(course.memo)
   const [showMemo, setShowMemo] = useState(true)
   const [showDetail, setShowDetail] = useState(false)
+
   useEffect(() => {
     if (courseDetailIsOpened) {
-      setMemo(memo_)
+      setMemo(course.memo)
     }
-  }, [courseDetailIsOpened, memo_])
+  }, [courseDetailIsOpened, course.memo])
 
   const CDFLOnClose = () => {
-
-    onClose()
-
+    course.memo=memo
+    onClose(course)
   }
 
   // icon先不要了啊
@@ -60,18 +61,9 @@ export default (props) => {
       customWeeksZh = '整个学期'
     }
     items = [
-      {
-        value: <><Text className='courseDetailFloatLayout-itemTitle'>地点：</Text><Text>{clazzRoom}</Text></>,
-        icon: '',
-      },
-      {
-        value: <><Text className='courseDetailFloatLayout-itemTitle'>时间：</Text><Text>{timeRange}</Text></>,
-        icon: '',
-      },
-      {
-        value: <><Text className='courseDetailFloatLayout-itemTitle'>周目：</Text><Text>{customWeeksZh}</Text></>,
-        icon: '',
-      },
+      <><Text className='courseDetailFloatLayout-itemTitle'>地点：</Text><Text>{clazzRoom}</Text></>,
+      <><Text className='courseDetailFloatLayout-itemTitle'>时间：</Text><Text>{timeRange}</Text></>,
+      <><Text className='courseDetailFloatLayout-itemTitle'>周目：</Text><Text>{customWeeksZh}</Text></>,
     ]
   }
 
@@ -90,17 +82,6 @@ export default (props) => {
     })
   }
 
-  const handleClickClazzMates = () => {
-    dispatch({
-      type: UPDATE_BIZDATA,
-      payload: {
-        clazzName: name,
-        lessonCode,
-        semestercode,
-      },
-    })
-    Taro.navigateTo({ url: '/pages/schedule/pages/class-list/index' })
-  }
 
   let RightBtn = null
   switch (type) {
@@ -175,8 +156,6 @@ export default (props) => {
             placeholder-style='color:#ccc;'
             onInput={e => setMemo(e.detail.value)}
           />
-
-
         </View>
 
       </View>

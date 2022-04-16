@@ -5,7 +5,7 @@ import './index.scss'
 import Weather from './components/Weather'
 export default (props) => {
     const [statusBarHeight, setStatusBarHeight] = useState(28)
-    const { dateZh, currentDayIndex, currentWeekIndex, weekData, handleClickDay, dayIndex,dailyScheduleNumber } = props
+    const { dateZh, dayIndex, currentDayIndex, weekIndex, currentWeekIndex, weekData, handleClickDay, dailyScheduleNumber } = props
     const showCalendar = false
 
     useEffect(() => {
@@ -58,7 +58,7 @@ export default (props) => {
                             {weekData.map((dayData, _currentdayIndex) => (
                                 <View className='schedule-header-timePicker-dayLine-item' key={dayData.dateZh}>
                                     <View
-                                        className={`schedule-header-timePicker-dayLine-box schedule-header-timePicker-dayLine-box${_currentdayIndex === currentDayIndex ? '_active' : ''} schedule-header-timePicker-dayLine-box_static${dayIndex === _currentdayIndex&& _currentdayIndex !== currentDayIndex  ? '_current' : ''}  `}
+                                        className={`schedule-header-timePicker-dayLine-box schedule-header-timePicker-dayLine-box${_currentdayIndex === currentDayIndex ? '_active' : ''} schedule-header-timePicker-dayLine-box_static${dayIndex === _currentdayIndex && _currentdayIndex !== currentDayIndex && weekIndex == currentWeekIndex ? '_current' : ''}  `}
                                         onClick={() => handleClickDay(_currentdayIndex)}
                                     >
                                         <View className='schedule-header-timePicker-dayLine-box_day'>
