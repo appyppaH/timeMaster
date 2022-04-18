@@ -8,9 +8,10 @@ import { View } from '@tarojs/components'
 import EventTable from './components/EventTable'
 import EventTimeList from './components/EventTimeList'
 import ScheduleHeader from './components/Header'
+
+import CustomScheduleFL from '../../components/schedule-component/CustomScheduleFL'
 import CourseDetailFloatLayout from '../../components/schedule-component/CourseDetailFloatLayout'
-// import ColorPicker from '../../components/schedule-component/ColorPicker'
-// import CustomScheduleFL from '../../components/schedule-component/CustomScheduleFL'
+
 
 import './index.scss'
 let startX = 0;
@@ -37,6 +38,8 @@ class Schedule extends Component {
       //
       course: [],
       courseDetailIsOpened: false,
+      courseAddIsOpened: false,
+      addedEvent: { timeRange: [0, 0], memo: "" },
     }
   }
   componentWillMount() {
@@ -140,6 +143,9 @@ class Schedule extends Component {
       }
     }
   }
+  touchLongPress = (e) => {
+    console.log(e.mpEvent.currentTarget)
+  }
   swiperDayIndex = (obs) => {
     const index = this.state.currentDayIndex + obs
     // 右滑到头 跳转至上个星期
@@ -169,6 +175,7 @@ class Schedule extends Component {
   }
 
   handleClickCourse = (course, type) => {
+    console.log(course)
     this.setState({
       course: course,
       type: type,
@@ -177,21 +184,36 @@ class Schedule extends Component {
   }
   handleUpdateMemo = (course) => {
     // TODO：这里可能会出现一天上同一节课的情况（即课程id相同），需要改进
-    updateMemo(this.state.currentDayIndex, this.state.currentWeekIndex, course.lessonCode, course.memo).then(res => {
-      console.log(res)
-    }).catch(err => {
-      Taro.showToast({
-        title: '更新备注失败',
-        icon: 'none',
-        duration: 2000
-      })
-    })
+    // updateMemo(this.state.currentDayIndex, this.state.currentWeekIndex, course.lessonCode, course.memo).then(res => {
+    //   console.log(res)
+    // }).catch(err => {
+    //   Taro.showToast({
+    //     title: '更新备注失败',
+    //     icon: 'none',
+    //     duration: 2000
+    //   })
+    // })
     this.setState({
       courseDetailIsOpened: false,
       course: course
     })
   }
 
+  handleAddEventClose = () => {
+    this.setState({ courseAddIsOpened: false })
+  }
+  // 获取长按的Y轴坐标
+  handleEmptyScheduleLongPress = (_midY) => {
+    // 默认自定义时间为30分钟
+    _midY = Math.round(_midY)
+    const _startY = _midY - 15
+    const _endY = _midY + 15
+
+    this.setState({
+      addedEvent: { timeRange: [_startY, _endY] },
+      courseAddIsOpened: true
+    })
+  }
   render() {
     return (
       <View className='event'>
@@ -206,11 +228,23 @@ class Schedule extends Component {
           dailyScheduleNumber={this.state.dailyScheduleNumber}>
         </ScheduleHeader>
 
-        <View className='event-content' onTouchStart={(e) => this.touchStart(e)} onTouchMove={(e) => { this.touchMove(e) }} onTouchEnd={(e) => { this.touchEnd(e) }}>
-          <EventTimeList swiperDayIndex={this.swiperDayIndex} isToday={this.state.dayIndex === this.state.currentDayIndex && this.state.weekIndex === this.state.currentWeekIndex} />
+        <View className='event-content'
+          // onLongPress={(e) => this.touchLongPress(e)}
+          onTouchStart={(e) => this.touchStart(e)}
+          onTouchMove={(e) => { this.touchMove(e) }}
+          onTouchEnd={(e) => { this.touchEnd(e) }}>
+          <EventTimeList
+            swiperDayIndex={this.swiperDayIndex}
+            handleLongPress={this.handleEmptyScheduleLongPress}
+            isToday={this.state.dayIndex === this.state.currentDayIndex && this.state.weekIndex === this.state.currentWeekIndex} />
           {
             this.state.scheduleMatrix[1] != undefined ?
-              <EventTable handleClickCourse={this.handleClickCourse} dayScheduleData={this.state.scheduleMatrix[this.state.currentDayIndex]} currentDayIndex={this.state.currentDayIndex} weekIndex={this.state.weekIndex} currentWeekIndex={this.state.currentWeekIndex} />
+              <EventTable
+                handleClickCourse={this.handleClickCourse}
+                dayScheduleData={this.state.scheduleMatrix[this.state.currentDayIndex]}
+                currentDayIndex={this.state.currentDayIndex}
+                weekIndex={this.state.weekIndex}
+                currentWeekIndex={this.state.currentWeekIndex} />
               : <View></View>
           }
 
@@ -222,31 +256,17 @@ class Schedule extends Component {
           courseDetailIsOpened={this.state.courseDetailIsOpened}
           onClose={this.handleUpdateMemo}
         />
-    {/* <CustomScheduleFL
-        isOpened={customScheduleFLData.isOpened}
-        customScheduleFLData={customScheduleFLData}
-        updateData={(newData) => props.updateUiData({
-          customScheduleFLData: {
-            ...customScheduleFLData,
-            ...newData,
-          }
-        })}
-        source='event'
-        updateCourseDetailFL={(data) => props.updateUiData({
-          courseDetailFLData: {
-            ...courseDetailFLData,
-            ...data
-          }
-        })}
-        onClose={() => props.updateUiData({
-          customScheduleFLData: { isOpened: false },
-          courseDetailFLData: { ...courseDetailFLData, showMemo: true }
-        })}
-        scheduleMatrix={scheduleMatrix}
-        timeTable={timeTable}
-        weekIndex={weekIndex}
-        updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({ colorPickerData: { isOpened: true, handleColorChange, theme, color } })}
-      /> */}
+        <CustomScheduleFL
+          isOpened={this.state.courseAddIsOpened}
+          currentWeekIndex={this.state.currentWeekIndex}
+          currentDayIndex={this.state.currentDayIndex}
+          addedEvent={this.state.addedEvent}
+          updateData={this.handleUpdateSchedule}
+          updateCourseDetailFL={this.handleUpdateSchedule}
+          onClose={this.handleAddEventClose}
+          scheduleMatrix={this.state.scheduleMatrix}
+          weekIndex={this.state.weekIndex}
+        />
       </View>
     )
   }

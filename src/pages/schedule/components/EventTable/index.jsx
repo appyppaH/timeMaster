@@ -13,18 +13,13 @@ export default (props) => {
   const { dayScheduleData, weekIndex, dayIndex, handleClickCourse } = props
 
   //计算课程与上一个课程距离 的以及总长度F
-  const diffTime = (startTime, endTime) => {
-    const startDate = new Date('2000/05/21 ' + startTime).getTime()
-    const endDate = new Date('2000/05/21 ' + endTime).getTime()
-    return (endDate - startDate) / 60000
-  }
+
   for (var i in dayScheduleData) {
     for (var j in dayScheduleData[i]) {
-      dayScheduleData[i][j]["startTime"] = diffTime("7:00", dayScheduleData[i][j].timeRange[0])
-      dayScheduleData[i][j]["allTime"] = diffTime(dayScheduleData[i][j].timeRange[0], dayScheduleData[i][j].timeRange[1])
+      dayScheduleData[i][j]["startTime"] = dayScheduleData[i][j]["timeRange"][0]
+      dayScheduleData[i][j]["allTime"] = dayScheduleData[i][j].timeRange[1]- dayScheduleData[i][j].timeRange[0]
       dayScheduleData[i][j]["timeNum"] = dayScheduleData[i][j]["allTime"] / 50
     }
-
   }
 
 
@@ -59,6 +54,9 @@ export default (props) => {
   // }
 
 
+  const touchLongPress = (e, schedule, type) => {
+    handleClickCourse(schedule, type)
+  }
 
 
   return (
@@ -72,6 +70,7 @@ export default (props) => {
                 dayScheduleData[type].map((schedule, i) => {
                   return (<View
                     className={`eventTable-course courseBox-boxColor-${schedule.color}_${theme}`}
+                    onLongPress={(e) => { touchLongPress(e, schedule, type) }}
                     style={{
                       height: (schedule.allTime) * eventBoxHeight + 'px',
                       paddingLeft: 18 * eventBoxHeight + 'px',

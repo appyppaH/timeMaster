@@ -5,7 +5,7 @@ import { View, Text } from '@tarojs/components'
 import './index.scss';
 
 export default (props) => {
-  const { swiperDayIndex, isToday } = props;
+  const { swiperDayIndex, isToday,handleLongPress } = props;
   const [pTimeLine, setPTimeLine] = useState(30)
 
 
@@ -26,10 +26,8 @@ export default (props) => {
     const minutes = now.getMinutes()
     const startDate = new Date('2000/05/21 7:00').getTime()
     const endDate = new Date('2000/05/21 ' + hours + ':' + minutes).getTime()
-    // const endDate = new Date('2000/05/21 ' + "8" + ':' + "00").getTime()
     let time = (endDate - startDate) / 60000
     setPTimeLine(time)
-    console.log('当前时间' + time)
   }
   useEffect(() => {
     getPTimeLine()
@@ -38,14 +36,18 @@ export default (props) => {
     }, 60000);
   }, [])
 
-  
+  const touchLongPress = (e) => {
+    // const offsetTop = e.mpEvent.currentTarget.offsetTop
+    // const _detail = [e.detail["x"], e.detail["y"] - 249]
+    handleLongPress(e.detail["y"] - 249)
+  }
 
   return (
     <View className='eventTimeList'>
       {
         timeList.map(time => (
           // 一个item是两个小时
-          <View key={time} className='eventTimeList-item' style={{ height: 120 * eventBoxHeight + 'px' }}>
+          <View onLongPress={(e) => touchLongPress(e)} key={time} className='eventTimeList-item' style={{ height: 120 * eventBoxHeight + 'px' }}>
             <View className='eventTimeList-item-timeBox'>
               <Text>{time}</Text>
             </View>
@@ -56,7 +58,7 @@ export default (props) => {
 
       {
         (isToday) &&
-        <View className='eventTimeList-pTimeLine' style={{ marginTop:(pTimeLine * eventBoxHeight)  + 'px' }}>
+        <View className='eventTimeList-pTimeLine' style={{ marginTop: (pTimeLine * eventBoxHeight) + 'px' }}>
           <View className='eventTimeList-pTimeLine-dot'></View>
           <View className='eventTimeList-pTimeLine-line'></View>
         </View>
