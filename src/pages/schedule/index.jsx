@@ -30,7 +30,9 @@ class Schedule extends Component {
 
       weekData: [],
       otherWeek: 0,
+      //本周所有事件
       scheduleMatrix: [],
+      // 本学期所有事件，使用慢加载
       allSchedule: [],
       dailyScheduleNumber: 0,
       dateZh: dayjs().format('YYYY/MM/DD'),
@@ -64,8 +66,9 @@ class Schedule extends Component {
     const _week = dayjs(new Date()).diff(dayjs('2022/02/28'), 'week')
 
     getSchedule(startTime, endTime).then(res => {
+      _allSchedule[_week] = res.data.result
       this.setState({
-        allSchedule: _allSchedule[_week] = res.data.result,
+        allSchedule: _allSchedule,
         weekIndex: _week,
         currentWeekIndex: _week,
         currentDayIndex: _index,
@@ -73,19 +76,46 @@ class Schedule extends Component {
         dateZh: _weekData[_index].dateZh,
         weekData: _weekData,
         scheduleMatrix: res.data.result,
-        dailyScheduleNumber: res.data.result[this.state.currentDayIndex]["allSchedule"]
+        dailyScheduleNumber: res.data.result[this.state.currentDayIndex]["num"]
       })
     }).catch(err => {
       console.log(err)
     })
-
   }
 
-  getWeekDay = (obs) => {
+
+  swiperOtherWeek = (e) => {
+
+    const _sub = (this.state.currentDayIndex - e.detail.current) % 7
+    // console.log("e.detail.current", e.detail.current)
+    // console.log("_sub", _sub)
+    if (e.detail.current % 7 === 6 && _sub == 1) {
+      // 切换至上一周
+      console.log("切换至上一周u")
+      this.getWeekDay(this.state.otherWeek - 1, 6, this.state.currentWeekIndex - 1)
+    }
+    // console.log("dwadwadawadw:",e.detail.current/7)
+    if (_sub === 6) {
+      // 切换至下一周
+      this.getWeekDay(this.state.otherWeek + 1, 0, this.state.currentWeekIndex + 1)
+    } else if (_sub === -6) {
+      // 切换至上一周
+      this.getWeekDay(this.state.otherWeek - 1, 6, this.state.currentWeekIndex - 1)
+    } else {
+      this.setState({
+        currentDayIndex: e.detail.current,
+        dateZh: this.state.weekData[e.detail.current % 7].dateZh,
+        dailyScheduleNumber: this.state.scheduleMatrix[e.detail.current % 7]["num"],
+        // currentWeekIndex: e.detail.current / 7 + this.state.currentWeekIndex
+      })
+    }
+  }
+  getWeekDay = (obs, _currentdayIndex, _currentWeekIndex) => {
+    console.log("obs", obs)
     const _weekData = []
     var l = ["一", "二", "三", "四", "五", "六", "日"];
-
-    const _otherWeek = dayjs().subtract(obs, 'weeks')
+    let _scheduleMatrix = []
+    const _otherWeek = dayjs().add(obs, 'weeks')
     for (var i = 1; i <= 7; i++) {
       const _dateZh = _otherWeek.startOf('week').add(i, 'day').format('YYYY/MM/DD')
       const _dayZh = "周" + l[i - 1]
@@ -94,17 +124,46 @@ class Schedule extends Component {
     }
     const startTime = dayjs(_weekData[0].dateZh).valueOf() + 25231231
     const endTime = dayjs(_weekData[0].dateZh).add(6, "day").valueOf() + 82800000
+    const _nAllSchedule = this.state.allSchedule
 
-    getSchedule(startTime, endTime).then(res => {
+    if (_nAllSchedule[_currentWeekIndex].length !== 0) {
+      // 这个里面没有修改本学期所有课程数据，表示已经完全加载数据
+      console.log(_nAllSchedule[_currentWeekIndex].length)
+      console.log("currentWeekIndex", _currentWeekIndex)
+      console.log("currentDayIndex", _currentdayIndex)
       this.setState({
-        dateZh: _weekData[6 - this.state.currentDayIndex].dateZh,
+        dateZh: _weekData[_currentdayIndex].dateZh,
         weekData: _weekData,
-        scheduleMatrix: res.data.result,
-        dailyScheduleNumber: res.data.result[this.state.currentDayIndex]["allSchedule"]
+        scheduleMatrix: _nAllSchedule[_currentWeekIndex],
+        dailyScheduleNumber: _nAllSchedule[_currentWeekIndex][_currentdayIndex]["num"],
+        currentDayIndex: _currentdayIndex,
+        currentWeekIndex: _currentWeekIndex,
+        otherWeek: obs
       })
-    }).catch(err => {
-      console.log(err)
-    })
+    } else {
+      let _normalDauIndex = _currentdayIndex
+      if (obs > 0) {
+        _normalDauIndex = obs * 7 % 7
+      } else {
+        _normalDauIndex = 6
+      }
+      getSchedule(startTime, endTime).then(res => {
+        const _nAllSchedule = this.state.allSchedule
+        _nAllSchedule[_currentWeekIndex] = res.data.result
+        this.setState({
+          dateZh: _weekData[_normalDauIndex].dateZh,
+          weekData: _weekData,
+          allSchedule: _nAllSchedule,
+          scheduleMatrix: res.data.result,
+          dailyScheduleNumber: res.data.result[_normalDauIndex]["num"],
+          currentDayIndex: obs > 0 ? obs * 7 : 6,
+          currentWeekIndex: this.state.weekIndex + obs,
+          otherWeek: obs
+        })
+      }).catch(err => {
+        console.log(err)
+      })
+    }
 
 
   }
@@ -116,7 +175,6 @@ class Schedule extends Component {
       dailyScheduleNumber: this.state.scheduleMatrix[_currentdayIndex]["allSchedule"]
     })
   }
-
 
   handleClickCourse = (course, type) => {
     console.log(course)
@@ -166,89 +224,55 @@ class Schedule extends Component {
           weekIndex={this.state.weekIndex}
           currentWeekIndex={this.state.currentWeekIndex}
           weekData={this.state.weekData}
-          currentDayIndex={this.state.currentDayIndex}
+          currentDayIndex={this.state.currentDayIndex % 7}
           dayIndex={this.state.dayIndex}
           handleClickDay={this.getClickDayIndex}
           dailyScheduleNumber={this.state.dailyScheduleNumber}>
         </ScheduleHeader>
         {
-          this.state.scheduleMatrix.length === 0 ? <View></View> :
-            <Swiper
-              className="event-content"
-              circular
-              current={this.state.currentDayIndex}
-              onChange={(e) => {
-                const _sub = this.state.currentDayIndex - e.detail.current
-                if (_sub === 6) {
-                  this.getWeekDay(this.state.otherWeek - 1)
-                  this.setState({
-                    otherWeek: this.state.otherWeek - 1,
-                    currentWeekIndex: this.state.currentWeekIndex + 1,
-                    currentDayIndex: 0,
-                  })
-                } else if (_sub === -6) {
-                  this.getWeekDay(this.state.otherWeek + 1)
-                  this.setState({
-                    otherWeek: this.state.otherWeek + 1,
-                    currentWeekIndex: this.state.currentWeekIndex - 1,
-                    currentDayIndex: 6,
-                  })
-                } else {
-                  this.setState({
-                    currentDayIndex: e.detail.current,
-                    dateZh: this.state.weekData[e.detail.current].dateZh,
-                    dailyScheduleNumber: this.state.scheduleMatrix[e.detail.current]["allSchedule"]
-                  })
+          this.state.scheduleMatrix.length > 0 &&
+          <Swiper
+            className="event-content"
+            indicatorColor="#999"
+            indicatorActiveColor="#333"
+            indicatorDots
+            circular
+            current={this.state.currentDayIndex}
+            onChange={(e) => this.swiperOtherWeek(e)}
+          >
+            {
+              this.state.allSchedule.map((scheduleMatrix, i) => {
+                if (scheduleMatrix.length !== 0) {
+                  return (scheduleMatrix.map((day, index) => {
+                    return (
+                      <SwiperItem
+                        key={index}>
+                        <EventTimeList
+                          handleLongPress={this.handleEmptyScheduleLongPress}
+                          isToday={this.state.dayIndex === index && this.state.weekIndex === this.state.currentWeekIndex} />
+                        {
+
+                          <EventTable
+                            handleClickCourse={this.handleClickCourse}
+                            dayScheduleData={day}
+                            currentDayIndex={index}
+                            weekIndex={this.state.weekIndex}
+                            currentWeekIndex={this.state.currentWeekIndex} />
+                        }
+
+                      </SwiperItem>
+                    )
+                  }))
                 }
-              }}
-            >
-              {
-                this.state.scheduleMatrix.map((day, index) => {
-                  return (
-                    <SwiperItem
-                      key={index}>
-                      <EventTimeList
-                        handleLongPress={this.handleEmptyScheduleLongPress}
-                        isToday={this.state.dayIndex === index && this.state.weekIndex === this.state.currentWeekIndex} />
-                      {
+              })
 
-                        <EventTable
-                          handleClickCourse={this.handleClickCourse}
-                          dayScheduleData={day}
-                          currentDayIndex={index}
-                          weekIndex={this.state.weekIndex}
-                          currentWeekIndex={this.state.currentWeekIndex} />
-                      }
+            }
 
-                    </SwiperItem>
-                  )
-                })
-              }
+          </Swiper>
 
-            </Swiper>
         }
 
 
-        {/* <View className='event-content'
-          onTouchStart={(e) => this.touchStart(e)}
-          onTouchMove={(e) => { this.touchMove(e) }}
-          onTouchEnd={(e) => { this.touchEnd(e) }}>
-          <EventTimeList
-            swiperDayIndex={this.swiperDayIndex}
-            handleLongPress={this.handleEmptyScheduleLongPress}
-            isToday={this.state.dayIndex === this.state.currentDayIndex && this.state.weekIndex === this.state.currentWeekIndex} />
-          {
-            this.state.scheduleMatrix[1] != undefined ?
-              <EventTable
-                handleClickCourse={this.handleClickCourse}
-                dayScheduleData={this.state.scheduleMatrix[this.state.currentDayIndex]}
-                currentDayIndex={this.state.currentDayIndex}
-                weekIndex={this.state.weekIndex}
-                currentWeekIndex={this.state.currentWeekIndex} />
-              : <View></View>
-          }
-
-        </View> */}
 
         <CourseDetailFloatLayout
           course={this.state.course}
@@ -274,111 +298,4 @@ class Schedule extends Component {
 }
 
 
-
-// function Schedule(props) {
-//   // 手动选择的日期在周视图中的索引
-//   const [dayIndex, setDayIndex] = useState(0)
-//   // 当天所在周的第几天
-//   const [currentDayIndex, setCurrentDayIndex] = useState(0)
-//   // timePicker的显示日期
-//   const [weekData, setWeekData] = useState([])
-//   // 选择的日期相对于当前日期的偏移量
-//   const [otherWeek, setOtherWeek] = useState(0)
-//   // 当前周的日期
-//   const [currentWeekIndex, setCurrentWeekIndex] = useState(11)
-//   const [scheduleMatrix, setScheduleMatrix] = useState([])
-//   const [dayScheduleData, setDayScheduleData] = useState([])
-//   // header 上显示的日期
-//   const [dateZh, setDateZh] = useState(dayjs().format('YYYY/MM/DD'))
-//   // 手动选择的周数第几天
-//   const weekIndex = 11
-//   useEffect(() => {
-//     getWeekDay(0)
-//     getDayScheduleData(dateZh)
-//   }, [dateZh])
-
-
-
-
-
-//   return (
-//     <View className='event'>
-//       <ScheduleHeader
-//         dateZh={dateZh}
-//         currentWeekIndex={currentWeekIndex}
-//         weekData={weekData}
-//         currentDayIndex={currentDayIndex}
-//         dayIndex={dayIndex}
-//         handleClickDay={getClickDayIndex}>
-//       </ScheduleHeader>
-
-//       <View className='event-content' onTouchStart={(e) => touchStart(e)} onTouchMove={(e) => { touchMove(e) }} onTouchEnd={(e) => { touchEnd(e) }}>
-//         <EventTimeList swiperDayIndex={swiperDayIndex} isToday={dayIndex === currentDayIndex && weekIndex === currentWeekIndex} />
-//         <EventTable dayScheduleData={dayScheduleData} currentDayIndex={currentDayIndex} weekIndex={weekIndex} currentWeekIndex={currentWeekIndex} />
-//       </View>
-
-//       {/* 作用？？？ */}
-//       {/* <View className='event-whiteBackground'></View> */}
-
-//       {/* <CourseDetailFloatLayout
-//         courseDetailFLData={courseDetailFLData}
-//         source='event'
-//         onClose={() => { props.updateUiData({ courseDetailFLData: { ...courseDetailFLData, isOpened: false } }) }}
-//         updateColorPicker={(handleColorChange, theme, color) => props.updateUiData({
-//           colorPickerData: { isOpened: true, handleColorChange, theme, color },
-//           courseDetailFLData: { ...courseDetailFLData, showMemo: false }
-//         })}
-//         openCustomScheduleFL={({ dayIndex, startTime, courseType, chosenWeeks }) => props.updateUiData({
-//           customScheduleFLData: {
-//             ...courseDetailFLData,
-//             isOpened: true,
-//             type: 'change',
-//             dayIndex,
-//             startTime,
-//             courseType,
-//             chosenWeeks,
-//             currentWeekIndex: currentWeekIndex + 1,
-//           },
-//           chosenBlank: [],
-//           courseDetailFLData: { ...courseDetailFLData, showMemo: false }
-//         })}
-//       /> */}
-
-
-
-//       {/* <ColorPicker
-//         isOpened={colorPickerData.isOpened}
-//         onClose={() => props.updateUiData({
-//           colorPickerData: { isOpened: false },
-//           courseDetailFLData: { ...courseDetailFLData, showMemo: true }
-//         })}
-//         handleColorChange={colorPickerData.handleColorChange}
-//         theme={colorPickerData.theme}
-//         currentColor={colorPickerData.currentColor}
-//       /> */}
-//     </View>
-//   )
-// }
-
-// function mapStateToProps(state) {
-//   return {
-//     bizData: {
-//       weekIndex: state.event.bizData.weekIndex,
-//       currentWeekIndex: state.event.bizData.currentWeekIndex,
-//       scheduleMatrix: state.event.bizData.scheduleMatrix,
-//       timeTable: state.event.bizData.timeTable,
-//     },
-//     uiData: {
-//       courseDetailFLData: state.event.uiData.courseDetailFLData,
-//       customScheduleFLData: state.event.uiData.customScheduleFLData,
-//       colorPickerData: state.event.uiData.colorPickerData,
-//     }
-//   };
-// }
-
-// const mapActions = {
-//   ...eventActions
-// }
-
-// export default connect(mapStateToProps, mapActions)(Schedule);
 export default connect()(Schedule);

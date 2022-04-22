@@ -64,7 +64,7 @@ export default (props) => {
       {
 
         Object.keys(dayScheduleData).map((type) => {
-          if (type != 'allSchedule') {
+          if (type != 'num') {
             return (<View style={{ width: "inherit" }}>
               {
                 dayScheduleData[type].map((schedule, i) => {

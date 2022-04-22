@@ -17,12 +17,12 @@ export default (props) => {
 
     return (
         <View className='schedule-header' style={{ paddingTop: statusBarHeight + 44 }}>
-            <Weather  statusBarHeight={statusBarHeight} />
+            <Weather statusBarHeight={statusBarHeight} />
             <View className='schedule-header-Title'>
                 <View className='schedule-header-Title-title-left'>
                     {/* TODO: 这里要设置点击事件选择日历 */}
                     <View className='schedule-header-Title-title'>
-                        <Text style={{ marginRight: 8 }}>第{currentWeekIndex}周 {dateZh}</Text>
+                        <Text style={{ marginRight: 8 }}>第{currentWeekIndex + 1}周 {dateZh}</Text>
                         <AtIcon value='chevron-down' size='24' color='#aaaaaa' />
                     </View>
                     <View className='schedule-header-Title-comment'>
