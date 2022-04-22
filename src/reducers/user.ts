@@ -1,8 +1,9 @@
+import Taro from "@tarojs/taro"
 import { LOGIN } from "../actions/actions";
 
 const INITIAL_STATE = {
-    isLogin: false,
-    token: ''
+    isLogin: Taro.getStorageSync("isLogin")||false,
+    token: Taro.getStorageSync("Authorization")||"",
 }
 
 export default function counter(state = INITIAL_STATE, action) {

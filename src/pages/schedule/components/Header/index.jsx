@@ -3,6 +3,9 @@ import Taro from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
 import './index.scss'
 import Weather from './components/Weather'
+import IconFont from '../../../../components/iconfont'
+import { AtIcon } from 'taro-ui'
+
 export default (props) => {
     const [statusBarHeight, setStatusBarHeight] = useState(28)
     const { dateZh, dayIndex, currentDayIndex, weekIndex, currentWeekIndex, weekData, handleClickDay, dailyScheduleNumber } = props
@@ -14,13 +17,13 @@ export default (props) => {
 
     return (
         <View className='schedule-header' style={{ paddingTop: statusBarHeight + 44 }}>
-            <Weather statusBarHeight={statusBarHeight} />
+            <Weather  statusBarHeight={statusBarHeight} />
             <View className='schedule-header-Title'>
                 <View className='schedule-header-Title-title-left'>
                     {/* TODO: 这里要设置点击事件选择日历 */}
                     <View className='schedule-header-Title-title'>
                         <Text style={{ marginRight: 8 }}>第{currentWeekIndex}周 {dateZh}</Text>
-                        {/* <IconFont name='arrow-down-filling' size={24} color='#aaaaaa' /> */}
+                        <AtIcon value='chevron-down' size='24' color='#aaaaaa' />
                     </View>
                     <View className='schedule-header-Title-comment'>
                         <Text>今日有</Text>
@@ -29,14 +32,14 @@ export default (props) => {
                     </View>
                 </View>
 
-                <View className='schedule-header-Title-title-right'>
+                <View className='schedule-header-Title-right'>
                     {/* TODO：这里要设置点击事件定位 */}
-                    <View className='schedule-header-Title-title-right-operation' style={{ marginRight: '8rpx' }}>
+                    <View className='schedule-header-Title-right-operation' style={{ marginRight: '8rpx' }}>
                         {/* <IconFont name='dingwei' size={48} color='#aaaaaa' /> */}
                     </View>
                     {/* TODO：点击事件 展开选项 */}
-                    <View className='schedule-header-Title-title-right-operation'>
-                        {/* <IconFont name='moreandroid' size={48} color='#aaaaaa' /> */}
+                    <View className='schedule-header-Title-right-operation'>
+                        <AtIcon value='list' size='24' color='#aaaaaa' />
                     </View>
                 </View>
 

@@ -1,5 +1,6 @@
 import React, { Component, useState, useEffect } from 'react'
-import Taro, { usePullDownRefresh } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
+import { Swiper, SwiperItem } from '@tarojs/components'
 import { connect } from 'react-redux'
 import * as dayjs from 'dayjs'
 
@@ -14,10 +15,7 @@ import CourseDetailFloatLayout from '../../components/schedule-component/CourseD
 
 
 import './index.scss'
-let startX = 0;
-let startY = 0;
-let moveX = 0;
-let moveY = 0;
+
 class Schedule extends Component {
 
   constructor(props) {
@@ -33,6 +31,7 @@ class Schedule extends Component {
       weekData: [],
       otherWeek: 0,
       scheduleMatrix: [],
+      allSchedule: [],
       dailyScheduleNumber: 0,
       dateZh: dayjs().format('YYYY/MM/DD'),
       //
@@ -43,67 +42,70 @@ class Schedule extends Component {
     }
   }
   componentWillMount() {
-    this.getWeekDay(0)
-    this.getScheduleMatrix()
-  }
-  getScheduleMatrix = (dateZh) => {
-    let startTime = 0
-    let endTime = 0
-    if (dateZh) {
-      startTime = dayjs(dateZh).valueOf() + 25231231
-      endTime = dayjs(dateZh).add(6, "day").valueOf() + 82800000
-    } else {
-      startTime = dayjs().startOf("day").valueOf() + 25231231
-      endTime = dayjs().startOf("day").valueOf() + 82800000
+    let _allSchedule = []
+    let _index = 0
+    let _weekData = []
+    const startTime = dayjs().startOf("day").valueOf() + 25231231
+    const endTime = dayjs().startOf("day").valueOf() + 82800000
+    const __today = dayjs().format('YYYY/MM/DD')
+    const l = ["一", "二", "三", "四", "五", "六", "日"];
+    for (let index = 0; index < 20; index++) {
+      _allSchedule.push([])
     }
+    for (var i = 1; i <= 7; i++) {
+      const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
+      const _dayZh = "周" + l[i - 1]
+      const _today = __today === _dateZh ? true : false
+      if (_today) {
+        _index = i - 1
+      }
+      _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
+    }
+    const _week = dayjs(new Date()).diff(dayjs('2022/02/28'), 'week')
 
     getSchedule(startTime, endTime).then(res => {
       this.setState({
+        allSchedule: _allSchedule[_week] = res.data.result,
+        weekIndex: _week,
+        currentWeekIndex: _week,
+        currentDayIndex: _index,
+        dayIndex: _index,
+        dateZh: _weekData[_index].dateZh,
+        weekData: _weekData,
         scheduleMatrix: res.data.result,
         dailyScheduleNumber: res.data.result[this.state.currentDayIndex]["allSchedule"]
       })
     }).catch(err => {
       console.log(err)
     })
+
   }
+
   getWeekDay = (obs) => {
     const _weekData = []
-    let _index = 0
-    let _dateZh = this.state.dateZh
     var l = ["一", "二", "三", "四", "五", "六", "日"];
-    const __today = dayjs().format('YYYY/MM/DD')
 
-    if (obs !== 0) {
-      const _otherWeek = dayjs().subtract(obs, 'weeks')
-      for (var i = 1; i <= 7; i++) {
-        const _dateZh = _otherWeek.startOf('week').add(i, 'day').format('YYYY/MM/DD')
-        const _dayZh = "周" + l[i - 1]
-        const _today = false
-        _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
-      }
-      this.setState({
-        currentDayIndex: -1,
-        dateZh: _weekData[6 - this.state.currentDayIndex].dateZh,
-        weekData: _weekData
-      })
-      this.getScheduleMatrix(_weekData[0].dateZh)
-    } else {
-      for (var i = 1; i <= 7; i++) {
-        const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
-        const _dayZh = "周" + l[i - 1]
-        const _today = __today === _dateZh ? true : false
-        if (_today) {
-          _index = i - 1
-        }
-        _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
-      }
-      this.setState({
-        currentDayIndex: _index,
-        dayIndex: _index,
-        dateZh: _weekData[_index].dateZh,
-        weekData: _weekData
-      })
+    const _otherWeek = dayjs().subtract(obs, 'weeks')
+    for (var i = 1; i <= 7; i++) {
+      const _dateZh = _otherWeek.startOf('week').add(i, 'day').format('YYYY/MM/DD')
+      const _dayZh = "周" + l[i - 1]
+      const _today = false
+      _weekData.push({ dayZh: _dayZh, dateZh: _dateZh, today: _today })
     }
+    const startTime = dayjs(_weekData[0].dateZh).valueOf() + 25231231
+    const endTime = dayjs(_weekData[0].dateZh).add(6, "day").valueOf() + 82800000
+
+    getSchedule(startTime, endTime).then(res => {
+      this.setState({
+        dateZh: _weekData[6 - this.state.currentDayIndex].dateZh,
+        weekData: _weekData,
+        scheduleMatrix: res.data.result,
+        dailyScheduleNumber: res.data.result[this.state.currentDayIndex]["allSchedule"]
+      })
+    }).catch(err => {
+      console.log(err)
+    })
+
 
   }
 
@@ -115,64 +117,6 @@ class Schedule extends Component {
     })
   }
 
-  // touch翻页实现
-  touchStart = (e) => {
-    const { clientX, clientY } = e.touches[0]
-    startX = clientX
-    startY = clientY
-  }
-  touchMove = (e) => {
-    const { clientX, clientY } = e.touches[0]
-    moveX = clientX - startX
-    moveY = clientY - startY
-  }
-  touchEnd = () => {
-    if (Math.abs(moveX) > 30 && Math.abs(moveX) > Math.abs(moveY)) {
-      if (moveX > 0) {
-        startX = 0
-        startY = 0
-        moveX = 0
-        moveY = 0
-        this.swiperDayIndex(-1)
-      } else {
-        startX = 0
-        startY = 0
-        moveX = 0
-        moveY = 0
-        this.swiperDayIndex(1)
-      }
-    }
-  }
-  touchLongPress = (e) => {
-    console.log(e.mpEvent.currentTarget)
-  }
-  swiperDayIndex = (obs) => {
-    const index = this.state.currentDayIndex + obs
-    // 右滑到头 跳转至上个星期
-    if (index < 0) {
-      this.getWeekDay(this.state.otherWeek + 1)
-      this.setState({
-        otherWeek: this.state.otherWeek + 1,
-        currentWeekIndex: this.state.currentWeekIndex - 1,
-        currentDayIndex: 6,
-      })
-
-      // 左滑到头、跳转至下个星期
-    } else if (index > 6) {
-      this.getWeekDay(this.state.otherWeek - 1)
-      this.setState({
-        otherWeek: this.state.otherWeek - 1,
-        currentWeekIndex: this.state.currentWeekIndex + 1,
-        currentDayIndex: 0,
-      })
-    } else {
-      this.setState({
-        dateZh: this.state.weekData[index].dateZh,
-        currentDayIndex: index,
-        dailyScheduleNumber: this.state.scheduleMatrix[index]["allSchedule"]
-      })
-    }
-  }
 
   handleClickCourse = (course, type) => {
     console.log(course)
@@ -227,9 +171,65 @@ class Schedule extends Component {
           handleClickDay={this.getClickDayIndex}
           dailyScheduleNumber={this.state.dailyScheduleNumber}>
         </ScheduleHeader>
+        {
+          this.state.scheduleMatrix.length === 0 ? <View></View> :
+            <Swiper
+              className="event-content"
+              circular
+              current={this.state.currentDayIndex}
+              onChange={(e) => {
+                const _sub = this.state.currentDayIndex - e.detail.current
+                if (_sub === 6) {
+                  this.getWeekDay(this.state.otherWeek - 1)
+                  this.setState({
+                    otherWeek: this.state.otherWeek - 1,
+                    currentWeekIndex: this.state.currentWeekIndex + 1,
+                    currentDayIndex: 0,
+                  })
+                } else if (_sub === -6) {
+                  this.getWeekDay(this.state.otherWeek + 1)
+                  this.setState({
+                    otherWeek: this.state.otherWeek + 1,
+                    currentWeekIndex: this.state.currentWeekIndex - 1,
+                    currentDayIndex: 6,
+                  })
+                } else {
+                  this.setState({
+                    currentDayIndex: e.detail.current,
+                    dateZh: this.state.weekData[e.detail.current].dateZh,
+                    dailyScheduleNumber: this.state.scheduleMatrix[e.detail.current]["allSchedule"]
+                  })
+                }
+              }}
+            >
+              {
+                this.state.scheduleMatrix.map((day, index) => {
+                  return (
+                    <SwiperItem
+                      key={index}>
+                      <EventTimeList
+                        handleLongPress={this.handleEmptyScheduleLongPress}
+                        isToday={this.state.dayIndex === index && this.state.weekIndex === this.state.currentWeekIndex} />
+                      {
 
-        <View className='event-content'
-          // onLongPress={(e) => this.touchLongPress(e)}
+                        <EventTable
+                          handleClickCourse={this.handleClickCourse}
+                          dayScheduleData={day}
+                          currentDayIndex={index}
+                          weekIndex={this.state.weekIndex}
+                          currentWeekIndex={this.state.currentWeekIndex} />
+                      }
+
+                    </SwiperItem>
+                  )
+                })
+              }
+
+            </Swiper>
+        }
+
+
+        {/* <View className='event-content'
           onTouchStart={(e) => this.touchStart(e)}
           onTouchMove={(e) => { this.touchMove(e) }}
           onTouchEnd={(e) => { this.touchEnd(e) }}>
@@ -248,7 +248,7 @@ class Schedule extends Component {
               : <View></View>
           }
 
-        </View>
+        </View> */}
 
         <CourseDetailFloatLayout
           course={this.state.course}

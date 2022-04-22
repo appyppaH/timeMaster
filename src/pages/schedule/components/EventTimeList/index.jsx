@@ -5,7 +5,7 @@ import { View, Text } from '@tarojs/components'
 import './index.scss';
 
 export default (props) => {
-  const { swiperDayIndex, isToday,handleLongPress } = props;
+  const { isToday,handleLongPress } = props;
   const [pTimeLine, setPTimeLine] = useState(30)
 
 

@@ -1,5 +1,8 @@
+import { useGlobalIconFont } from './components/iconfont/helper';
+
 export default {
-  pages: ['pages/schedule/index',"pages/index/index", "pages/home/index"],
+  usingComponents: Object.assign(useGlobalIconFont()),
+  pages: ["pages/index/index",'pages/schedule/index', "pages/home/index"],
   tabBar: {
     color: "#606468",
     selectedColor: "#0089ff",
@@ -10,11 +13,13 @@ export default {
       {
         pagePath: 'pages/schedule/index',
         text: '日程',
+        iconPath: 'assets/img/schedule.png',
+        selectedIconPath: 'assets/img/schedule_active.png',
       },
-      {
-        pagePath: 'pages/index/index',
-        text: '课表',
-      },
+      // {
+      //   pagePath: 'pages/index/index',
+      //   text: '课表',
+      // },
       {
         pagePath: 'pages/home/index',
         text: '我',

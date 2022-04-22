@@ -1,0 +1,10 @@
+{
+    "symbol_url": "//at.alicdn.com/t/font_2259797_ctnj5cosqy7.js",
+    "save_dir": "./src/components/iconfont",
+    "use_typescript": false,
+    "platforms": ["weapp"],
+    "use_rpx": true,
+    "trim_icon_prefix": "icon",
+    "default_icon_size": 18,
+    "order": "npx iconfont-taro"
+}

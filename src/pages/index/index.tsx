@@ -3,6 +3,9 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import Taro from '@tarojs/taro'
 import { View } from '@tarojs/components'
+import Login from "./components/Login"
+import { wxLogin, checkBinding } from "../../servers/servers"
+import { login } from '../../actions/actions'
 import { useLogin } from "taro-hooks";
 
 // type StateType = {
@@ -14,27 +17,49 @@ type propType = {
         isLogin: boolean,
         token: String
     };
+    loginClick: Function;
 };
 class Index extends Component<any, propType> {
     constructor(props) {
         super(props)
     }
-    static propTypes = {
-        data: PropTypes.object.isRequired,
-    }
+
     componentWillMount() {
-        console.log("初始页挂载")
+        // console.log(this.props)
         if (this.props.user.isLogin) {
             Taro.switchTab({ url: '/pages/home/index' })
-        }else{
-            Taro.switchTab({ url: '/pages/home/index' })
+            
+        } else {
+            console.log("未登录")
+            Taro.switchTab({ url: '/pages/schedule/index' })
         }
+    }
+    toLogin = (username, password) => {
+        Taro.login({
+            success: (res) => {
+                wxLogin(username, password, 1001, res.code).then((res) => {
+                    if (res.data.errcode === 200) {
+                        this.props.loginClick(res.data.token)
+                        Taro.setStorageSync("isLogin", true)
+                        Taro.setStorageSync('Authorization', res.data.token)
+                        Taro.reLaunch({
+                            url: '/pages/schedule/index'
+                        })
+                    } else {
+                        Taro.atMessage({
+                            'message': res.data.errmsg,
+                            'type': 'warning',
+                            duration: 2000,
+                        })
+                    }
+                })
+            }
+        })
     }
     render() {
         return (
             <View>
-                <View>dwadaw</View>
-                {/* <Login fLogin={this.toLogin}></Login> */}
+                <Login fLogin={this.toLogin} />
             </View>
         )
     }
@@ -46,5 +71,13 @@ const mapStateToProps = (state) => {
     }
 }
 
-// export default connect(mapStateToProps , mapDispatchToProps)(Login);
-export default connect(mapStateToProps)(Index)
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loginClick: token => {
+            dispatch(login(token))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);
+// export default connect(mapStateToProps)(Index)

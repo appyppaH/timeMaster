@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text, OpenData } from '@tarojs/components'
+import IconFont from '../../components/iconfont'
 import './index.scss'
 
 const noComplete = () => {
@@ -106,7 +107,7 @@ export default class Home extends Component {
                     </View>
                     <View className='home-header-nickName'>
                         <Text>{this.state.name}</Text>
-                        {/* <OpenData type='userNickName' ></OpenData> */}
+                        <OpenData type='userNickName' ></OpenData>
                         {/* <Text>{this.props.store.userInfoStore.userInfo.userName ? this.props.store.userInfoStore.userInfo.userName : '获取信息失败'}</Text> */}
                     </View>
                 </View>
@@ -119,7 +120,7 @@ export default class Home extends Component {
                         {
                             cardData.map(data => (
                                 <View key={data.name} className='home-content-card-box' onClick={data.onClick}>
-                                    {/* <IconFont name={data.icon} size={68} /> */}
+                                    <IconFont name={data.icon} size={68} />
                                     <View className='home-content-card-box-nameBox'>
                                         <View className='home-content-card-box-nameBox_redPoint'>{data.redPoint}</View>
                                         <Text className='home-content-card-box-nameBox_name'>{data.name}</Text>
@@ -134,13 +135,13 @@ export default class Home extends Component {
                             toolsData.map(data => (
                                 <View key={data.name} className='home-content-group-item' onClick={data.onClick}>
                                     <View className='home-content-group-item-left'>
-                                        {/* <IconFont name={data.icon} size={48} /> */}
+                                        <IconFont name={data.icon} size={48} />
                                         <View className='home-content-group-item-left-nameBox'>
                                             <View className='home-content-group-item-left-nameBox_redPoint'>{data.redPoint}</View>
                                             <Text style={{ marginLeft: 10 }}>{data.name}</Text>
                                         </View>
                                     </View>
-                                    {/* <IconFont name='right' size={48} /> */}
+                                    <IconFont name='right' size={48} />
                                 </View>
                             ))
                         }
