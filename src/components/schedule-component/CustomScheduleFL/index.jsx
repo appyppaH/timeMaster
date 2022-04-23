@@ -2,26 +2,24 @@ import React, { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Input, Text } from '@tarojs/components'
 import { AtFloatLayout, AtInputNumber, AtIcon } from 'taro-ui'
-
-
 import CustomButton from '../../../components/CustomButton'
+import dayjs from 'dayjs'
 
-// import validWeekChecker from '../../../utils/validWeekChecker'
 import './index.scss'
+
 
 export default (props) => {
   const theme = 0
   const type = 'add'
 
-  const { isOpened, onClose, addedEvent, currentWeekIndex, currentDayIndex, updateData, scheduleMatrix, updateCourseDetailFL } = props
-  const { name, clazzRoom, chosenWeeks = [], dayIndex = 0, startTime = 0, lessonId, memo, color = 'blue' } = addedEvent
+  const { isOpened, onClose, addedEvent, currentWeekIndex, currentDayIndex, updateData, scheduleMatrix } = props
+  const { name, clazzRoom, timeRange, memo, color = 'blue' } = addedEvent
 
   const [evnetName, setEventName] = useState(name)
   const [eventPlace, setEventPlace] = useState(clazzRoom)
   const [eventMemo, setEventMemo] = useState(memo)
-  const [eventWeeks, setEventWeeks] = useState(chosenWeeks)
+  const [eventWeeks, setEventWeeks] = useState([])
 
-  const [validWeeks, setValidWeeks] = useState([])
   const [multChosen, setMultChosen] = useState('')
 
   const weekIndexes = []
@@ -97,10 +95,12 @@ export default (props) => {
     setEventWeeks(newChosenWeeks)
     // addedEvent.chosenWeeks = newChosenWeeks
   }
-
+  const timeText = (time) => {
+    const _day = dayjs("2020-01-01 07:00").add(time, 'minutes')
+    return _day.format('HH:mm')
+  }
   const handleClickSubmit = () => {
-    const finalWeeks = chosenWeeks.filter(chosenWeek => validWeeks[chosenWeek - 1] === 0)
-    if (!name) {
+    if (!evnetName) {
       Taro.showToast({
         title: '请填写事件名',
         icon: 'none',
@@ -108,7 +108,7 @@ export default (props) => {
       })
       return null
     }
-    else if (finalWeeks.length === 0) {
+    else if (eventWeeks.length === 0) {
       Taro.showToast({
         title: '请选择至少一个周目',
         icon: 'none',
@@ -116,11 +116,7 @@ export default (props) => {
       })
       return null
     }
-
-    if (type === 'change') {
-      updateCourseDetailFL(newData)
-    }
-
+    updateData({ "name": evnetName, "clazzRoom": eventPlace, "chosenWeeks": eventWeeks, "timeRange": addedEvent.timeRange, "memo": eventMemo, "color": "red" })
     Taro.showToast({
       title: '添加成功',
       duration: 1000
@@ -149,7 +145,7 @@ export default (props) => {
             <Input
               className='customScheduleFL-content-item-input'
               placeholder='必填'
-              value={name ? name : ''}
+              value={evnetName ? evnetName : ''}
               onInput={e => setEventName(e.detail.value)}
             />
           </View>
@@ -182,10 +178,10 @@ export default (props) => {
             <View className='customScheduleFL-content-item-timeIndexBox-jieshuBox'>
               <Text className='customScheduleFL-content-item-timeIndexBox-jieshuBox_title'>时间</Text>
 
-              <Text className='customScheduleFL-content-item-timeIndexBox-jieshuBox_time'>{`${addedEvent.timeRange[0]}-`}</Text>
+              <Text className='customScheduleFL-content-item-timeIndexBox-jieshuBox_time'>{`${timeText(addedEvent.timeRange[0])}-`}</Text>
 
-              <Text className={`customScheduleFL-content-item-timeIndexBox-jieshuBox_time customScheduleFL-content-item-timeIndexBox-jieshuBox_time_${validWeeks[0] === 2 && 'danger'}`}>
-                {addedEvent.timeRange[1]}</Text>
+              <Text className={`customScheduleFL-content-item-timeIndexBox-jieshuBox_time customScheduleFL-content-item-timeIndexBox-jieshuBox_time`}>
+                {timeText(addedEvent.timeRange[1])}</Text>
             </View>
             {/* TODO 时间选择 */}
             {/* <AtInputNumber
@@ -230,14 +226,14 @@ export default (props) => {
               weekIndexes.map((selectWeekIndex, i) => {
 
                 const isChosen = eventWeeks.indexOf(selectWeekIndex) !== -1
-                
+
                 return (
                   <View key={`key${selectWeekIndex}`}
                     className={`customScheduleFL-content-item-weekIndexContent-week customScheduleFL-content-item-weekIndexContent-week_${isChosen ? 'chosen' : ''}`}
                     style={`opacity: ${selectWeekIndex > 20 ? 0 : 1}`}
                     onClick={() => handleClickWeekBox(selectWeekIndex)}
                   >
-                    {selectWeekIndex === currentWeekIndex ? '本周' : selectWeekIndex}
+                    {selectWeekIndex === currentWeekIndex + 1 ? '本周' : selectWeekIndex}
                   </View>
                 )
               })

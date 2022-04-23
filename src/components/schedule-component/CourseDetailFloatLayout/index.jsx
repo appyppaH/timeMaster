@@ -5,7 +5,7 @@ import { View, Text, Textarea } from '@tarojs/components'
 import { useDispatch, useSelector } from 'react-redux'
 import ColorButton from '../../../components/ColorButton'
 import CustomButton from '../../../components/CustomButton'
-
+import dayjs from 'dayjs'
 
 import './index.scss'
 
@@ -27,10 +27,14 @@ export default (props) => {
   }, [courseDetailIsOpened, course.memo])
 
   const CDFLOnClose = () => {
-    course.memo=memo
+    course.memo = memo
     onClose(course)
   }
-
+  const timeText = (_timeRange) => {
+    const _days = dayjs("2020-01-01 07:00").add(_timeRange[0], 'minutes')
+    const _daye = dayjs("2020-01-01 07:00").add(_timeRange[1], 'minutes')
+    return _days.format('HH:mm') + "-" + _daye.format('HH:mm')
+  }
   // icon先不要了啊
   let items = []
   let detailItems = []
@@ -45,8 +49,7 @@ export default (props) => {
     items = [
       <><Text className='courseDetailFloatLayout-itemTitle'>教室：</Text><Text>{clazzRoom}</Text></>,
       <><Text className='courseDetailFloatLayout-itemTitle'>老师：</Text><Text>{teacher}</Text></>,
-      <><Text className='courseDetailFloatLayout-itemTitle'>时间：</Text><Text>{timeRange}</Text></>,
-      <><Text className='courseDetailFloatLayout-itemTitle'>开设周目：</Text><Text>{weekIndexesZh}</Text></>
+      <><Text className='courseDetailFloatLayout-itemTitle'>时间：</Text><Text>{timeText(timeRange)}</Text></>,
     ]
     detailItems = [
       <><Text className='courseDetailFloatLayout-itemTitle'>学分：</Text><Text>{credits}</Text></>,
@@ -55,14 +58,14 @@ export default (props) => {
       <><Text className='courseDetailFloatLayout-itemTitle'>课程代码：</Text><Text>{lessonCode}</Text></>,
       <><Text className='courseDetailFloatLayout-itemTitle'>上课班级：</Text><Text>{clazzString}</Text></>
     ]
-  } else if (type === 'custom' || type === 'exam') {
+  } else if (type === "event" || type === 'custom' || type === 'exam') {
     let customWeeksZh = weekIndexes.map(weekIndex => (weekIndex !== weekIndexes[weekIndexes.length - 1]) ? weekIndex + ', ' : weekIndex)
     if (customWeeksZh.length === 20) {
       customWeeksZh = '整个学期'
     }
     items = [
       <><Text className='courseDetailFloatLayout-itemTitle'>地点：</Text><Text>{clazzRoom}</Text></>,
-      <><Text className='courseDetailFloatLayout-itemTitle'>时间：</Text><Text>{timeRange}</Text></>,
+      <><Text className='courseDetailFloatLayout-itemTitle'>时间：</Text><Text>{timeText(timeRange)}</Text></>,
       <><Text className='courseDetailFloatLayout-itemTitle'>周目：</Text><Text>{customWeeksZh}</Text></>,
     ]
   }

@@ -24,19 +24,6 @@ export default (props) => {
 
 
 
-  // console.log(dayScheduleData)
-  // const timeTable = [
-  //   // 基于早上七点计算的时间
-  //   { "startTime": 60, "startTimeText": "08:00" },
-  //   { "endTime": 230, "endTimeText": "10:50" }
-  // ]
-  // 958863600000  15981060
-  // 958867200000  15981120 差60
-  // 958924800000  15982080 差1020
-  // dayScheduleData[周次][天] = 当天课程
-  // const dayScheduleData = scheduleMatrix[weekIndex][dayIndex]
-  // 当天课程
-
   // 确定是否带伞
   // let rainPre = 0
   // if (weatherHourly && dayLineMatrix.length !== 0 && weatherHourly.precipitation && name) {
