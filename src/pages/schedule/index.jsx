@@ -84,8 +84,10 @@ class Schedule extends Component {
       console.log(err)
     })
   }
-
-
+  // 分享页
+  onShareAppMessage(res){
+    console.log(res)
+  }
   swiperOtherWeek = (e) => {
 
     const _sub = (this.state.currentDayIndex - e.detail.current) % 7

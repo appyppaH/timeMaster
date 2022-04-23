@@ -6,4 +6,5 @@ export default {
   enablePullDownRefresh: true,
   backgroundTextStyle: 'dark',
   navigationStyle: "custom",
+  enableShareAppMessage: true
 }

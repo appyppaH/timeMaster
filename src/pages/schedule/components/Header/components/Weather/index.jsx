@@ -24,7 +24,12 @@ class Weather extends React.Component {
     this.setState({
       statusBarHeight: Taro.getSystemInfoSync().statusBarHeight
     })
-    this.getWeater()
+    console.log(this.props.weather.state.weatherData)
+    
+    if (Object.keys(this.props.weather.state.weatherData).length === 0) {
+      this.getWeater()
+    }
+
   }
   async getWeater() {
     const res = await Taro.request({ url: `https://api.caiyunapp.com/v2.5/Y2FpeXVuIGFuZHJpb2QgYXBp/${location.longitude},${location.latitude}/weather.json` })
