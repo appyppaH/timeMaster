@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
+import { AtCalendar } from 'taro-ui'
 import './index.scss'
 import Weather from './components/Weather'
 import IconFont from '../../../../components/iconfont'
@@ -8,8 +9,8 @@ import { AtIcon } from 'taro-ui'
 
 export default (props) => {
     const [statusBarHeight, setStatusBarHeight] = useState(28)
-    const { dateZh, dayIndex, currentDayIndex, weekIndex, currentWeekIndex, weekData, handleClickDay, dailyScheduleNumber } = props
-    const showCalendar = false
+    const { handleClickCalendarDay, dateZh, dayIndex, currentDayIndex, weekIndex, currentWeekIndex, weekData, handleClickDay, dailyScheduleNumber } = props
+    const [showCalendar, setShowCalendar] = useState(false)
 
     useEffect(() => {
         setStatusBarHeight(Taro.getSystemInfoSync().statusBarHeight)
@@ -17,11 +18,10 @@ export default (props) => {
 
     return (
         <View className='schedule-header' style={{ paddingTop: statusBarHeight + 44 }}>
-            <Weather statusBarHeight={statusBarHeight} />
+            <Weather  statusBarHeight={statusBarHeight} />
             <View className='schedule-header-Title'>
                 <View className='schedule-header-Title-title-left'>
-                    {/* TODO: 这里要设置点击事件选择日历 */}
-                    <View className='schedule-header-Title-title'>
+                    <View className='schedule-header-Title-title' onClick={() => setShowCalendar(!showCalendar)}>
                         <Text style={{ marginRight: 8 }}>第{currentWeekIndex + 1}周 {dateZh}</Text>
                         <AtIcon value='chevron-down' size='24' color='#aaaaaa' />
                     </View>
@@ -43,18 +43,13 @@ export default (props) => {
                     </View>
                 </View>
 
-                {/* <SettingFloatLayout
-        isOpened={showSetting}
-        onClose={() => setShowSetting(false)}
-      /> */}
             </View>
             <View className='schedule-header-timePicker'>
                 {
                     showCalendar ?
                         <View className='schedule-header-timePicker-calendar'>
-                            {/* TODO: onSelectDate={e => handleClickCalendarDay(e)} */}
-                            {/* <AtCalendar isSwiper={false} minDate='2020/9/7' maxDate='2021/1/24' /> */}
-                            {/* <View className='schedule-header-timePicker-calendar-back' onClick={() => dispatch(updateUiData({ showCalendar: false }))}>收起</View> */}
+                            <AtCalendar isSwiper={false} minDate='2022/2/28' maxDate='2022/6/30' onSelectDate={e => handleClickCalendarDay(e)} />
+                            <View className='schedule-header-timePicker-calendar-back' onClick={() => setShowCalendar(false)}>收起</View>
                         </View>
                         :
                         <View className='schedule-header-timePicker-dayLine'>

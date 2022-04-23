@@ -1,9 +1,15 @@
 export const LOGIN = 'LOGIN'
+export const SETWEATHER = 'SETWEATHER'
 
-
-export function login(token: String) {
+export function login(Authorization: String) {
     return {
         type: LOGIN,
-        payload: token
+        payload: Authorization
+    }
+}
+export function setWeather(WeacherData: Object) {
+    return {
+        type: SETWEATHER,
+        payload: WeacherData
     }
 }

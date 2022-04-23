@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 import Taro from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import Login from "./components/Login"
 import { wxLogin, checkBinding } from "../../servers/servers"
 import { login } from '../../actions/actions'
-import { useLogin } from "taro-hooks";
+// import { useLogin } from "taro-hooks";
 
 // type StateType = {
 //     name: string;
@@ -40,8 +40,6 @@ class Index extends Component<any, propType> {
                 wxLogin(username, password, 1001, res.code).then((res) => {
                     if (res.data.errcode === 200) {
                         this.props.loginClick(res.data.token)
-                        Taro.setStorageSync("isLogin", true)
-                        Taro.setStorageSync('Authorization', res.data.token)
                         Taro.reLaunch({
                             url: '/pages/schedule/index'
                         })

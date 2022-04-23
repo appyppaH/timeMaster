@@ -149,7 +149,7 @@
     position: relative;
     animation: calendar-in .5s forwards;
     margin-bottom: 16px;
-
+    z-index: 2;
     &-back {
       z-index: 4;
       position: absolute;

@@ -2,7 +2,7 @@ import { useGlobalIconFont } from './components/iconfont/helper';
 
 export default {
   usingComponents: Object.assign(useGlobalIconFont()),
-  pages: ["pages/index/index",'pages/schedule/index', "pages/home/index"],
+  pages: ["pages/index/index",'pages/schedule/index', "pages/home/index",'pages/weather-detail/index'],
   tabBar: {
     color: "#606468",
     selectedColor: "#0089ff",
@@ -17,8 +17,8 @@ export default {
         selectedIconPath: 'assets/img/schedule_active.png',
       },
       // {
-      //   pagePath: 'pages/index/index',
-      //   text: '课表',
+      //   pagePath: 'pages/weather-detail/index',
+      //   text: '天气',
       // },
       {
         pagePath: 'pages/home/index',

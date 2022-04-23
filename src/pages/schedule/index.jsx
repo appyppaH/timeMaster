@@ -239,6 +239,26 @@ class Schedule extends Component {
       courseAddIsOpened: true
     })
   }
+  handleClickCalendarDay = (e) => {
+    const _currentWeekIndex = dayjs(e.value.start).diff(dayjs('2022/02/28'), 'week')
+    const _currentDayIndex = dayjs(e.value.start).day()
+    if (_currentWeekIndex < this.state.hasDataWeek) {
+      Taro.showToast({
+        title: '暂未加载课程',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    this.setState({
+      dateZh: dayjs(e.value.start).format('YYYY/MM/DD'),
+      currentWeekIndex: _currentWeekIndex,
+      currentDayIndex: _currentDayIndex,
+      dailyScheduleNumber: this.state.allSchedule[_currentWeekIndex][_currentDayIndex]["allSchedule"],
+      scheduleMatrix: this.state.allSchedule[_currentWeekIndex],
+
+    })
+  }
   render() {
     return (
       <View className='event'>
@@ -250,6 +270,7 @@ class Schedule extends Component {
           currentDayIndex={this.state.currentDayIndex % 7}
           dayIndex={this.state.dayIndex}
           handleClickDay={this.getClickDayIndex}
+          handleClickCalendarDay={this.handleClickCalendarDay}
           dailyScheduleNumber={this.state.dailyScheduleNumber}>
         </ScheduleHeader>
         {
