@@ -13,77 +13,77 @@ export default {
   PARTLY_CLOUDY_DAY: {
     code: 'partly_cloudy_day',
     desc: '多云',
-    img: "https://imgtu.com/i/LRhhFK",
+    img: "https://s1.ax1x.com/2022/04/24/L4H2DK.png",
   },
   PARTLY_CLOUDY_NIGHT: {
     code: 'partly_cloudy_night',
     desc: '多云',
-    img: "https://imgtu.com/i/LRh4JO",
+    img: "https://s1.ax1x.com/2022/04/22/LRh4JO.png",
   },
   CLOUDY: {
     code: 'cloudy',
     desc: '阴天',
-    img: "https://imgtu.com/i/LRhcLR",
+    img: "https://s1.ax1x.com/2022/04/22/LRhcLR.png",
   },
 
   LIGHT_RAIN: {
     code: 'rain',
     desc: '小雨',
-    img: "https://imgtu.com/i/LRh5WD",
+    img: "https://s1.ax1x.com/2022/04/22/LRh5WD.png",
   },
   MODERATE_RAIN: {
     code: 'rain',
     desc: '中雨',
-    img: "https://imgtu.com/i/LRh5WD",
+    img: "https://s1.ax1x.com/2022/04/22/LRh5WD.png",
   },
   HEAVY_RAIN: {
     code: 'rain',
     desc: '大雨',
-    img: "https://imgtu.com/i/LRh5WD",
+    img: "https://s1.ax1x.com/2022/04/22/LRh5WD.png",
   },
   STORM_RAIN: {
     code: 'thunderstorm',
     desc: '暴雨',
-    img: "https://imgtu.com/i/LR4vH1",
+    img: "https://s1.ax1x.com/2022/04/22/LR4vH1.png",
   },
 
   FOG: {
     code: 'fog',
     desc: '雾',
-    img: "https://imgtu.com/i/LRhyQJ",
+    img: "https://s1.ax1x.com/2022/04/22/LRhyQJ.png",
   },
 
   LIGHT_SNOW: {
     code: 'snow',
     desc: '小雪',
-    img: "https://imgtu.com/i/LR4zAx",
+    img: "https://s1.ax1x.com/2022/04/22/LR4zAx.png",
   },
   MODERATE_SNOW: {
     code: 'snow',
     desc: '中雪',
-    img: "https://imgtu.com/i/LR4zAx",
+    img: "https://s1.ax1x.com/2022/04/22/LR4zAx.png",
   },
   HEAVY_SNOW: {
     code: 'snow',
     desc: '大雪',
-    img: "https://imgtu.com/i/LR4zAx",
+    img: "https://s1.ax1x.com/2022/04/22/LR4zAx.png",
   },
   STORM_SNOW: {
     code: 'snow',
     desc: '暴雪',
-    img: "https://imgtu.com/i/LR4zAx",
+    img: "https://s1.ax1x.com/2022/04/22/LR4zAx.png",
   },
 
   // 特殊天气
   DUST: {
     code: 'fog',
     desc: '浮尘',
-    img: "https://imgtu.com/i/LRhyQJ",
+    img: "https://s1.ax1x.com/2022/04/22/LRhyQJ.png",
   },
   SAND: {
     code: 'fog',
     desc: '沙尘',
-    img: "https://imgtu.com/i/LRhyQJ",
+    img: "https://s1.ax1x.com/2022/04/22/LRhyQJ.png",
   },
   WIND: {
     code: 'cloudy',
@@ -93,16 +93,16 @@ export default {
   LIGHT_HAZE: {
     code: 'haze',
     desc: '轻度雾霾',
-    img: "https://imgtu.com/i/LRhRdx",
+    img: "https://s1.ax1x.com/2022/04/22/LRhRdx.png",
   },
   MODERATE_HAZE: {
     code: 'haze',
     desc: '中度雾霾',
-    img: "https://imgtu.com/i/LRhRdx",
+    img: "https://s1.ax1x.com/2022/04/22/LRhRdx.png",
   },
   HEAVY_HAZE: {
     code: 'haze',
     desc: '重度雾霾',
-    img: "https://imgtu.com/i/LRhRdx",
+    img: "https://s1.ax1x.com/2022/04/22/LRhRdx.png",
   },
 }

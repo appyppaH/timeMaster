@@ -95,6 +95,9 @@ export default (props) => {
     case 'custom':
       RightBtn = <CustomButton value='删除事件' type='danger' onSubmit={handleDeleteCustom} />
       break;
+    case 'event':
+      RightBtn = <CustomButton value='删除事件' type='danger' onSubmit={handleDeleteCustom} />
+      break;
     case 'exam':
       RightBtn = <CustomButton value='自习教室' type='call' onSubmit={() => Taro.navigateTo({ url: '/pages/home/pages/empty-clazz-room/index' })} />
       break;

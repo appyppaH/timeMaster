@@ -55,6 +55,8 @@ class Schedule extends Component {
     for (let index = 0; index < 20; index++) {
       _allSchedule.push([])
     }
+    // console.log(dayjs().startOf('week').add(0, 'day').format('YYYY/MM/DD'))
+    // 这里有bug  如果是周日 那么会造成得到下一周的信息
     for (var i = 1; i <= 7; i++) {
       const _dateZh = dayjs().startOf('week').add(i, 'day').format('YYYY/MM/DD')
       const _dayZh = "周" + l[i - 1]
@@ -85,7 +87,7 @@ class Schedule extends Component {
     })
   }
   // 分享页
-  onShareAppMessage(res){
+  onShareAppMessage(res) {
     console.log(res)
   }
   swiperOtherWeek = (e) => {
